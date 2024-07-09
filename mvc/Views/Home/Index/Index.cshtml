@@ -1,0 +1,182 @@
+﻿@using Models.IndexModels;
+@using mvc.Models.IndexModels;
+@{
+
+    
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = null;
+
+}
+<link rel="stylesheet" href="/css/Index.css">
+
+<div class="contentdetailbox" id="app">
+
+    @*    <div class="submenulist">
+    <div class="attensionneededsublist">
+    <span id="">運轉資料</span>
+
+    </div>
+
+    </div>
+
+    <div class="submenudetail">
+
+
+
+
+
+
+
+    <div class="Indexbackgroundbox1"></div>
+    <div class="Indexbackgroundbox2"></div>
+    <div class="Indexinfobox1">
+    <table class="table1">
+    @{
+    foreach (IndexModel indexModel in indexModels)
+    {
+    <tr>
+    <td class="Indexdetailheading" colspan="3">
+    <span class="Indexgeneratedpower">系統總發電量</span>(變流器容量: <span class="Indexinvertercapacity"> @InvCap</span> kWp)
+    </td>
+    </tr>
+    <tr class="Indextoprow">
+    <td class="Indexdetailname"><div>即時發電量:</div></td>
+    <td class="Indexdata"><div><input type="text" readonly id="" class="" value="@indexModel.PESACTotalKW"></div></td>
+    <td class="Indexdetailunit"><div>kW</div></td>
+    </tr>
+    <tr>
+    <td class="Indexdetailname">總累積發電量:</td>
+    <td class="Indexdata"><input type="text" readonly id="" class="" value="@indexModel.PESACTotalKWH"></td>
+    <td class="Indexdetailunit">kWH</td>
+    </tr>
+
+    <tr>
+    <td class="Indexdetailname">即時性能比(PR) :</td>
+    <td class="Indexdata"><input type="text" readonly id="" class="" value="@indexModel.TotalPerformanceRatio"></td>
+    <td class="Indexdetailunit">%</td>
+    </tr>
+    <tr>
+    <td class="Indexdetailname">總發電比:</td>
+    <td class="Indexdata"><input type="text" readonly id="" class="" value="@indexModel.TotalGeneratedPowerRatio"></td>
+    <td class="Indexdetailunit">%</td>
+    </tr>
+    <tr>
+    <td class="Indexdetailname">總系統效率:</td>
+    <td class="Indexdata"><input type="text" readonly id="" class="" value="@indexModel.TotalSystemEffciency"></td>
+    <td class="Indexdetailunit">%</td>
+    </tr>
+    }
+    }
+    </table>
+    </div>
+    <div class="Indexinfobox2">
+    <table class="table2">
+
+    @{
+    foreach (IndexModel indexModel in indexModels)
+    {
+
+    <tr>
+    <td class="Indexdetailname">日照強度:</td>
+    <td class="Indexdata"><input type="text" readonly id="IndexInverterTemperature" value="@indexModel.SolarIntensity"></td>
+    <td class="Indexdetailunit">W/m&sup2</td>
+    </tr>
+    <tr>
+    <td class="Indexdetailname">大氣溫度:</td>
+    <td class="Indexdata"><input type="text" readonly id="IndexTotalACPower" value="@indexModel.AirTemperature"></td>
+    <td class="Indexdetailunit">&deg;C</td>
+    </tr>
+    <tr class="IndexShadetemperature">
+    <td class="Indexdetailname">遮陰溫度:</td>
+    <td class="Indexdata"><input type="text" readonly id="IndexShadetemperature" value="@indexModel.Shadetemperature"></td>
+    <td class="Indexdetailunit">&deg;C</td>
+    </tr>
+    <tr>
+    <td class="Indexdetailname">陣列溫度:</td>
+    <td class="Indexdata"><input type="text" readonly id="" class="TotalDCPower" value="@indexModel.ArrayTemperature"></td>
+    <td class="Indexdetailunit">&deg;C</td>
+    </tr>
+    }
+    }
+    @{
+    foreach (CalIndexModel calIndexModel in calIndexModels)
+    {
+    <tr>
+    <td class="Indexdetailname">今日累積日照量 :</td>
+    <td class="Indexdata"><input type="text" readonly id="" class="TotalDCPower" value="@calIndexModel.CumulatedSolarRadiation"></td>
+    <td class="Indexdetailunit">W/m&sup2</td>
+    </tr>
+    }
+    }
+
+    </table>
+    </div>
+
+
+    </div>*@
+</div>
+
+
+
+
+@section Scripts{
+    <script>
+        function reloadAtMidnight() {
+            const now = new Date();
+            const midnight = new Date(now);
+            midnight.setHours(24, 0, 0, 0); // Set the time to midnight (00:00:00:000)
+
+            const timeUntilMidnight = midnight - now;
+
+            setTimeout(function () {
+                location.reload();
+                reloadAtMidnight(); // Schedule the next reload for the next day
+            }, timeUntilMidnight);
+        }
+
+        // Call the function to start the reloading process
+        reloadAtMidnight();
+    </script>
+    <script>
+        var contentLoaderInterval = null;
+
+
+        function loadIndexDetailContent() {
+            $.ajax({
+                url: '@Url.Action("LoadIndexDetail", "Home")',
+                type: 'GET',
+                
+                dataType: 'html',
+                success: function (data) {
+                    // Replace the content of submenudetail div with fetched data
+                    $('#app').html(data);
+                },
+                error: function () {
+                    console.error('Error fetching submenudetail content.');
+                }
+            });
+        }
+
+        function refreshContent() {
+            // Clear the previous interval (if any)
+            clearInterval(contentLoaderInterval);
+
+            // Load content immediately
+            loadIndexDetailContent();
+
+            // Set a new interval for loading content
+            contentLoaderInterval = setInterval(function () {
+                loadIndexDetailContent();
+            }, 10000);
+        }
+
+        // Initial call to load content for the default selected page
+        refreshContent();
+
+
+
+    </script>
+
+
+
+            }

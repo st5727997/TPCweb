@@ -1,0 +1,234 @@
+﻿@using mvc.Models
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<PowerEquipmentStatusModel> powerEquipmentModels = ViewBag.PESModels;
+
+    int ACPMCount = (int)powerEquipmentModels[0].ACPMCount;
+    int ACBCount = (int)powerEquipmentModels[0].ACBCount;
+    int GCBCount = (int)powerEquipmentModels[0].GCBCount;
+    int MCCBCount = (int)powerEquipmentModels[0].MCCBCount;
+    int VCBCount = (int)powerEquipmentModels[0].VCBCount;
+    int TRCount = (int)powerEquipmentModels[0].TRCount;
+    
+
+    int[] PESCounts =
+    {
+        ACPMCount,
+        ACBCount ,
+        GCBCount ,
+        MCCBCount,
+        VCBCount ,
+        TRCount  ,
+    };
+
+    string[] PESNames =
+            {
+"ACPM",
+"ACB",
+"GCB",
+"MCCB",
+"VCB",
+"TR",
+    };
+
+    List<string> pageTitles = new List<string>();
+    {
+        for (int i = 0; i < PESCounts.Length; i++)
+        {
+            //  T/F check
+            if (PESCounts[i] != 0)
+            {
+                string PESName = PESNames[i];
+                //even number
+                if (PESCounts[i] % 2 == 0)
+                {
+
+
+
+                    for (int j = 1; j <= (PESCounts[i] + 1) / 2; j++)
+                    {
+
+                        int startValue = j * 2 - 1;
+                        pageTitles.Add($"{PESName}:{startValue}+{startValue + 1}");
+                        startValue += 2;
+                    }
+
+
+                }
+                // odd number
+                else
+                {
+
+
+
+                    for (int j = 1; j <= (PESCounts[i]) / 2; j++)
+                    {
+
+                        int startValue = j * 2 - 1;
+                        pageTitles.Add($"{PESName}:{startValue}+{startValue + 1}");
+                        startValue += 2;
+                    }
+                    pageTitles.Add($"{PESName}:{PESCounts[i]}");
+
+
+                }
+
+
+            }
+        }
+    };
+    //List<string> pagePESTitles = new List<string>();
+    //{
+    //    for (int i = 0; i < PESCounts.Length; i++)
+    //    {
+    //        //  T/F check
+    //        if (PESCounts[i] != 0)
+    //        {
+    //            string PESName = PESNames[i];
+    //            //even number
+    //            if (PESCounts[i] % 2 == 0)
+    //            {
+
+
+
+    //                for (int j = 1; j <= (PESCounts[i] + 1) / 2; j++)
+    //                {
+
+    //                    int startValue = j * 2 - 1;
+    //                    pageTitles.Add($"{PESName}{j}");
+    //                    startValue += 2;
+    //                }
+
+
+    //            }
+    //            // odd number
+    //            else
+    //            {
+
+
+
+    //                for (int j = 1; j <= (PESCounts[i]) / 2; j++)
+    //                {
+
+    //                    int startValue = j * 2 - 1;
+    //                    pageTitles.Add($"{PESName}{j}");
+    //                    startValue += 2;
+    //                }
+    //                pageTitles.Add($"{PESName}{i}");
+
+
+    //            }
+
+
+    //        }
+    //    }
+    //};
+
+
+}
+
+<script>
+    function reloadAtMidnight() {
+        const now = new Date();
+        const midnight = new Date(now);
+        midnight.setHours(24, 0, 0, 0); // Set the time to midnight (00:00:00:000)
+
+        const timeUntilMidnight = midnight - now;
+
+        setTimeout(function () {
+            location.reload();
+            reloadAtMidnight(); // Schedule the next reload for the next day
+        }, timeUntilMidnight);
+    }
+
+    // Call the function to start the reloading process
+    reloadAtMidnight();
+</script>
+<link rel="stylesheet" href="/css/PowerEquipementStatus_DC.css">
+<link rel="stylesheet" href="/css/ACPM.css">
+
+
+<div class="contentdetailbox" id="app">
+
+
+    <div class="submenulist">
+        <div class="attensionneededsublist">
+            <span id="PMdata" data-pages-count="@pageTitles.Count">交流電錶資料</span>
+
+        </div>
+        <div class="Meterlistbox">
+            <select class="Meterlist" onchange="handleMeterChange(this.value)">
+                @for (int i = 1; i <= pageTitles.Count; i++)
+                {
+                    <option value="P@(i)">@pageTitles[i-1]</option>
+                }
+
+
+            </select>
+            <script>
+                var pagesCountElement = document.getElementById("PMdata");
+                var PagesCount = pagesCountElement.getAttribute("data-pages-count");
+                var actionUrls = {};
+                console.log(PagesCount)
+                for (var i = 1; i <= PagesCount; i++) {
+                    actionUrls['P' + i] = 'ACPM/_PowerEquipmentStatus' + i;
+
+                }
+
+                var selectedPage = 'ACPM/_PowerEquipmentStatus1'; // Default selected page
+                var contentLoaderInterval = null;
+
+                function handleMeterChange(value) {
+                    selectedPage = actionUrls[value];
+                    refreshContent();
+                }
+
+                function loadPESDetailContent() {
+                    $.ajax({
+                        url: '@Url.Action("LoadPESDetail", "Home")',
+                        type: 'GET',
+                        data: { PESPath: selectedPage },
+                        dataType: 'html',
+                        success: function (data) {
+                            // Replace the content of submenudetail div with fetched data
+                            $('#PESDetailBox').html(data);
+                        },
+                        error: function () {
+                            console.error('Error fetching submenudetail content.');
+                        }
+                    });
+                }
+
+                function refreshContent() {
+                    // Clear the previous interval (if any)
+                    clearInterval(contentLoaderInterval);
+
+                    // Load content immediately
+                    loadPESDetailContent();
+
+                    // Set a new interval for loading content
+                    contentLoaderInterval = setInterval(function () {
+                        loadPESDetailContent();
+                    }, 10000);
+                }
+
+                // Initial call to load content for the default selected page
+                refreshContent();
+            </script>
+        </div>
+
+    </div>
+
+    <div id="PESDetailBox">
+    </div>
+
+
+
+
+</div>
+
+@section Scripts{
+
+
+    }

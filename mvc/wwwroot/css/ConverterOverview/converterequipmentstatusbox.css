@@ -1,0 +1,178 @@
+﻿.menulist #converter {
+    font-size: 28px;
+    color: #497a34
+}
+
+.convertersublist #converteroverview {
+    font-size: 35px;
+    color: #033988;
+    padding-right: 2vw;
+}
+
+
+
+.CESbox {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(224, 244, 215, 0.8);
+    row-gap: 1vh;
+    border: 2px solid;
+    border-radius: 5px;
+    padding: 5px;
+    white-space: nowrap;
+}
+
+.CESdetailbox {
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1vh;
+    flex-wrap: wrap;
+    row-gap: 3px;
+    margin-inline: 5px;
+    height: 300px;
+}
+
+.CESdetailrow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    column-gap: 5px;
+    margin-right: 5px;
+}
+
+.CESheading {
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: 2px dashed black;
+}
+
+.Invlistbox {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-right: 130px;
+}
+
+select {
+    height: 40px;
+    font-size: 25px
+}
+
+
+.converterequipmentnumber {
+    grid-column: 1;
+    text-align: left;
+    color: #0A1767;
+    font-size: 25px;
+    padding-left: 5px;
+    font-family: Arial;
+}
+
+
+.converteractivationstatusbox {
+    display: flex;
+    align-items: center;
+}
+
+.converteractivationstatustext {
+}
+
+    .converteractivationstatustext div {
+        text-align: center;
+    }
+
+
+
+
+
+
+
+
+.CESdetailname {
+    width: 150px;
+    text-align: left;
+    align-items: center;
+    text-align-last: justify;
+}
+
+.CESdetaildata input {
+    height: 30px;
+    width: 100%;
+    font-family: Arial;
+    text-align: center;
+}
+
+.CESdetaildata {
+    width: 140px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.CESdetailunitbox {
+    display: flex;
+    align-items: center;
+}
+
+.CESdetailunit {
+    width: 5%;
+    text-align: left;
+    font-size: 16px;
+}
+
+.detaildata {
+    height: 3.5vh;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.subbox {
+}
+
+#submenudetail {
+    width: 1600px;
+    overflow: auto;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+
+
+.OverViewTable {
+    width: 1600px;
+    /*overflow: auto;*/
+    height: 100%;
+    /*background-color: rgba(255, 255, 255, 0.7);*/
+}
+
+.TableBox {
+    padding: 20px;
+    width: max-content
+}
+
+table {
+    table-layout: auto;
+}
+
+td, th {
+    padding: 5px;
+    text-align: center;
+    border: solid 1px;
+}
+
+th {
+    font-size: 20px;
+    color: #061767;
+    font-weight: bolder;
+}
+
+td {
+    color: #203552;
+    font-size: 16px;
+}
+
+.statusbtnbox {
+    width: 25px;
+}

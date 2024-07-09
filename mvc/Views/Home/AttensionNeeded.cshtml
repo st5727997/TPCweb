@@ -1,0 +1,211 @@
+﻿@{
+    List<ConverterInfoModel>? converterInfoModels = ViewBag.ConverterInfoModels;
+    List<AttensionNeededModel> attensionNeededModels = ViewBag.converterModels;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Dictionary<string, string> replacementDictionary = converterInfoModels[0].replacementDictionary;
+
+
+
+}
+
+<link rel="stylesheet" href="/css/AttensionNeeded.css">
+
+
+<div class="contentdetailbox" id="app">
+
+    <div class="submenulist">
+        <div class="attensionneededsublist">
+            <span id="">即時警報</span>
+
+        </div>
+
+    </div>
+
+    <div class="ANbackgroundbox1">
+        <div class="ckbox">
+            <label>
+                <input type="checkbox" value="All" class="RQlistbox-checkbox"> 全部
+            </label>
+            <label>
+                <input type="checkbox" value="Tr" class="RQlistbox-checkbox"> 變壓器
+            </label>
+            <label>
+                <input type="checkbox" value="Relay" class="RQlistbox-checkbox"> 保護電驛
+            </label>
+            <label>
+                <input type="checkbox" value="Inv" class="RQlistbox-checkbox"> 變流器
+            </label>
+            <label>
+                <input type="checkbox" value="Other" class="RQlistbox-checkbox"> 其他
+            </label>
+
+        </div>
+        <div class="attensionneededtable">
+
+
+            <table class=" ANtable">
+
+                <thead>
+                    <tr class="ANtabletitle">
+                        <th><div>警報時間</div></th>
+                        <th><div>警報名稱</div></th>
+                        <th><div>警報內容</div></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- The table body will contain the data rows -->
+                </tbody>
+
+
+               @*  <colgroup>
+                    <col span="1" class="ANeventtime">
+                    <col span="1" class="ANalarmname">
+                    <col span="1" class="ANalarmmessage">
+                </colgroup>
+
+                <tr class="ANtabletitle">
+                    <th><div>警報時間</div></th>
+                    <th><div>警報名稱</div></th>
+                    <th><div>警報內容</div></th>
+                </tr>
+
+                @if (attensionNeededModels != null)
+                {
+                    @foreach (AttensionNeededModel attensionNeededModel in attensionNeededModels)
+                    {
+                        <tr class="AjaxReturn">
+                            <td>@attensionNeededModel.EventTime</td>
+                            <td>@attensionNeededModel.AlarmName</td>
+                            <td>@attensionNeededModel.AlarmMessage</td>
+                        </tr>
+                    }
+                } *@
+
+
+            </table>
+
+        </div>
+
+
+
+    </div>
+</div>
+
+    <script>
+
+
+
+
+        $(document).ready(function () {
+
+            // Define your replacement dictionary
+            // Convert C# replacementDictionary to JavaScript object
+            var replacementDictionary = JSON.parse('@Html.Raw(Json.Serialize(replacementDictionary))');
+            // console.log(replacementDictionary);
+
+
+
+            // This function will be executed when the checkboxes change
+            $(".RQlistbox-checkbox").change(function () {
+                // Prevent the default form submission behavior
+                event.preventDefault();
+
+
+
+
+                // Get selected checkbox values
+                var selectedCheckboxes = [];
+                $(".RQlistbox-checkbox:checked").each(function () {
+                    selectedCheckboxes.push($(this).val());
+                });
+
+
+
+
+
+                // Send AJAX request
+                $.ajax({
+                    type: "POST", // or "GET" depending on your controller action
+                    url: "/Home/AttensionneededTable", // Replace with the actual controller and action name
+                    data: {
+                        selectedCheckboxes: selectedCheckboxes
+                    },
+
+
+                    success: function (data) {
+
+                        //Clear previous table rows
+                        var tableBody = $(".ANtable tbody");
+                        tableBody.empty();
+
+                        // Preprocess time values to remove 'T' and sort data by "name" values
+                        data.forEach(function (item) {
+                            if (item.eventTime) {
+                                item.eventTime = item.eventTime.replace('T', ' ');
+                            }
+                        });
+                        // Populate the table with the received data
+                        if (data.length > 0) {
+                            data.forEach(function (item) {
+                                // For each alarm name, create a row
+                                item.alarmName.forEach(function (name, index) {
+                                    // Check if the value is 1, if yes, skip this row
+                                    if (item.alarmValue[index] === 0) {
+                                        return; // Skip this row
+                                    }
+                                    var row = "<tr>";
+                                    // Display the event time only for the first alarm name
+                                    if (index === 0) {
+                                        row += "<td><div class='time'>" + item.eventTime + "</div></td>";
+                                    } else {
+                                        row += "<td><div class='time'>" + item.eventTime + "</div></td>"; 
+                                    }
+                                    row += "<td><div class='name'>" + name + "</div></td>";
+                                    // Check if the alarm message exists in the replacement dictionary
+                                    var alarmMessage = item.alarmMessage[index];
+                                    if (replacementDictionary.hasOwnProperty(alarmMessage)) {
+                                        // Replace the alarm message with the corresponding value from the dictionary
+                                        alarmMessage = replacementDictionary[alarmMessage];
+                                    }
+
+                                    row += "<td><div class='message'>" + alarmMessage + "</div></td>";
+                                    row += "</tr>";
+                                    tableBody.append(row);
+                                });
+                            });
+                 
+
+
+                        
+                        } else {
+                            // If data is empty, show a message in the table
+                            tableBody.append("<tr><td colspan='3'>No data</td></tr>");
+                        }
+                    },
+
+
+
+
+
+
+                    error: function (xhr, textStatus, errorThrown) {
+                        // If there is an error fetching data from the server, display an error message
+                        var tableBody = $(".ANtable tbody");
+                        tableBody.empty();
+                        tableBody.append("<tr><td colspan='3'>Error fetching data from the server.</td></tr>");
+                    }
+
+                });
+            });
+        });
+
+
+
+    </script>
+
+
+
+
+
+
+

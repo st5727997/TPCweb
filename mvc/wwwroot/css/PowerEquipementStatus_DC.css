@@ -1,0 +1,128 @@
+﻿
+
+.menulist #powerequipmentstatus {
+    font-size: 28px;
+    color: #497a34
+}
+
+
+.submenudetail1 {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1%;
+    height: 76vh;
+    width: 84vw;
+}
+
+
+
+.PESbackgroundbox {
+    background-color: rgba(224, 244, 215, 0.8);
+    border: 2px solid;
+    border-radius: 10px;
+    width: 24%;
+    height: 50%;
+}
+
+select{
+    width:9vw;
+}
+.Meterlistbox {
+    text-align:right;
+    margin-right:2vw;
+}
+.Meterlist{
+    padding-inline:5px;
+    font-size: 22px;
+
+}
+
+tr{
+    
+
+}
+
+
+
+
+
+/*.PESinfobox1 {
+    white-space: nowrap;
+    width: 23vw;
+    position: absolute;
+    transform: translate(10%,4%);
+    
+}*/
+.PEStable {
+    margin-inline: 3%;
+    
+}
+
+
+.PESinfobox {
+  
+    white-space: nowrap;
+
+}
+
+
+
+    
+
+.spacerrow {
+    height:0.5vh;
+}
+
+
+
+.PESdetailheading {
+
+    
+    vertical-align: bottom;
+    border-bottom: 2px dashed black;
+    font-size: 30px;
+    color: #061767;
+}
+#PESSunlightIntensity{
+    margin-top:.5vh;
+
+}
+
+.PESdetailname{
+   
+    width:180px;
+}
+
+
+
+    td.PESdata input {
+        height:4vh;
+        width:100% ;
+        text-align:center;
+    }
+
+.PESinfobox td.PESdetailname {
+    padding-right: .5vw;
+    text-align-last: justify;
+}
+
+
+
+td.PESDCdetailunit {
+    padding-left: .5vw;
+    text-align: left;
+    font-size: 18px;
+    width:50px;
+}
+
+
+tr{
+    height:5vh;
+
+}
+
+.fixeddata {
+    color: #497a34
+}
+

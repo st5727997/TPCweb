@@ -1,0 +1,185 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using mvc.Models;
+@using System.Reflection
+
+
+@{
+
+    List<ConverterInfoModel>? converterInfoModels = ViewBag.ConverterInfoModels as List<ConverterInfoModel>;
+
+    //int invCount = converterInfoModels.invCount;
+    List<string> units = ViewBag.Units;
+    List<string> dataNames = ViewBag.DataNames;
+    List<List<string>> dataKeys = ViewBag.DataKeys;
+   
+
+    List<string> eachInvCaps = converterInfoModels[0].eachInvCap;
+    List<string> invNames = new List<string>();
+    {
+        for (int i = 1; i <= converterInfoModels[0]?.invCount; i++)
+        {
+            string invName = $"Inv{i:D2}";
+            invNames.Add(invName);
+        }
+    }
+
+
+
+    //List<List<string>> dataKeys = new List<List<string>>();
+
+    //for (int i = 1; i <= converterInfoModels[0]?.invCount; i++)
+    //{
+    //    List<string> dataKey = new List<string>
+    //        {
+
+
+
+    //            $"S037_3{i:D2}_INV_DC_KW",
+    //            $"S037_3{i:D2}_INV_AC_TOT_KW",
+    //            $"S037_3{i:D2}_INV_EFF",
+    //            $"",
+    //            $"",
+    //            $"S037_3{i:D2}_INV_AC_TOT_KWH",
+    //            $"S037_3{i:D2}_INV_DC_TOT_VOLT",
+    //            $"S037_3{i:D2}_INV_DC_TOT_AMP",
+    //            $"S037_Inv_{i}_DC_RA",
+    //            $"S037_Inv_{i}_AC_V",
+    //            $"S037_Inv_{i}_AC_A",
+    //            $"",
+    //            $"S037_3{i:D2}_INV_AC_TOT_HZ",
+    //            $"",
+
+
+
+    //        };
+
+    //    dataKeys.Add(dataKey);
+    //}
+
+
+
+
+
+
+
+
+
+
+
+
+    double? GetInvStatus(string statusItem, int index)
+    {
+        string propertyName = $"CIInv{index + 1:D2}{statusItem}"; // Format the property name with leading zeros
+        PropertyInfo? propertyInfo = typeof(ConverterInfoModel).GetProperty(propertyName);
+        if (propertyInfo != null)
+        {
+            return (double?)propertyInfo.GetValue(converterInfoModels?.FirstOrDefault());
+        }
+        return null;
+    }
+
+
+    string GetDisplayValue(double? value)
+    {
+        if (value == -999 || value == null)
+        {
+            return "N/A";
+        }
+        else
+        {
+            // Limiting the displayed decimals to 2 digits after the decimal point
+            return Math.Round(value ?? 0, 2).ToString("#,0.##");
+            // return value.ToString();
+        }
+        // return value == -999 ? "N/A" : value.ToString();
+    }
+
+
+
+
+
+    string GetImagePath(double? status)
+    {
+        switch (status)
+        {
+
+            case 0: return "<img class='statusbtnbox' src='/images/Button_R.svg' alt='Image'>";
+            case 1: return "<img class='statusbtnbox' src='/images/Button_G.svg' alt='Image'>";
+            default: return "<img class='statusbtnbox' src='/images/Button_G.svg' alt='Image'>";
+
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+}
+
+
+
+<div class="OverViewTable">
+
+    <div class="TableBox">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>設備<br />狀態</th>
+                    <th>通訊<br />狀態</th>
+                    <th>變流器<br />故障</th>
+                    <th>警報</th>
+                    <th>裝置容量<br />(kWp)</th>
+                    @for (int j = 0; j < dataNames.Count; j++)
+                    {
+                        <th>@dataNames[j]<br />(@units[j])</th>
+                    }
+                </tr>
+            </thead>
+
+
+            <tbody>
+                @for (int i = 0; i < invNames.Count; i++)
+                {
+                    string[] statusItem = new string[] { "Status", "CommStatus", "ErrorStatus", "AlarmStatus" };
+                    <tr>
+                        <th>@invNames[i]</th>
+                        <th>@Html.Raw(GetImagePath(GetInvStatus(statusItem[0],i)))</th>
+                        <td>@Html.Raw(GetImagePath(GetInvStatus(statusItem[1],i)))</td>
+                        <td>@Html.Raw(GetImagePath(GetInvStatus(statusItem[2],i)))</td>
+                        <td>@Html.Raw(GetImagePath(GetInvStatus(statusItem[3],i)))</td>
+                        <td>@eachInvCaps[i]</td>
+                        @for (int j = 0; j < dataNames.Count; j++)
+                        {
+                            <td>
+                                @{
+                                    PropertyInfo propertyInfo = typeof(ConverterInfoModel).GetProperty(dataKeys[i][j]);
+                                    if (propertyInfo != null)
+                                    {
+                                        var value = propertyInfo?.GetValue(converterInfoModels.FirstOrDefault());
+
+                                        <span>@GetDisplayValue((double)value)</span>
+                                    }
+                                    else
+                                    {
+                                        <span>N/A</span>
+                                    }
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+
+    </div>
+</div>
+

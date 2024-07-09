@@ -1,0 +1,391 @@
+﻿@model List<AlarmHistroyModels>
+
+@{
+    List<AlarmHistroyModels> alarmhistoryModels = ViewBag.alarmhistoryModels;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<ConverterInfoModel>? converterInfoModels = ViewBag.ConverterInfoModels;
+    Dictionary<string, string> replacementDictionary = converterInfoModels[0].replacementDictionary;
+
+}
+
+<link rel="stylesheet" href="/css/AlarmHistory.css">
+
+
+
+
+<div class="contentdetailbox" id="app">
+
+    <div class="submenulist">
+        <div class="sublist">
+            <span id="">歷史警報</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="AHbackgroundbox1">
+        <div class="AHdetailbox">
+            <form class="AHfilterbar" id="filterForm">
+                <div class="AHfilterbar">
+
+                    從
+                    <div class="AHdatefrom">
+                        <div class="datebox">
+                            <div class="input-group"
+                                 id="datetimepicker1"
+                                 data-td-target-input="nearest"
+                                 data-td-target-toggle="nearest">
+                                <input id="datetimepicker1Input"
+                                       type="text"
+                                       class="form-control"
+                                       data-td-target="#datetimepicker1" />
+                                <span class="input-group-text"
+                                      data-td-target="#datetimepicker1"
+                                      data-td-toggle="datetimepicker">
+                                    <span class="fa-solid fa-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="AHtimefrom">
+                        @*<input class="form-control" type="text" id="time1" />*@
+                    </div>
+                    至
+                    <div class="AHdateto">
+                        <div class="datebox">
+                            <div class="input-group"
+                                 id="datetimepicker2"
+                                 data-td-target-input="nearest"
+                                 data-td-target-toggle="nearest">
+                                <input id="datetimepicker2Input"
+                                       type="text"
+                                       class="form-control"
+                                       data-td-target="#datetimepicker1" />
+                                <span class="input-group-text"
+                                      data-td-target="#datetimepicker1"
+                                      data-td-toggle="datetimepicker">
+                                    <span class="fa-solid fa-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="AHtimeto">
+                        @* <input class="form-control" type="text" id="time2" />*@
+                    </div>
+
+
+                    <script type="text/javascript">
+
+
+
+
+
+
+
+                    </script>
+
+
+
+
+
+                    @*             <input type="checkbox" name="checkbox" id="checkbox1" />
+                    <label for="checkbox1" class="txtred">警報發生</label>
+
+                    <input type="checkbox" id="checkbox2" name="checkbox2" />
+                    <label for="checkbox2" class="txtblue">消失</label> *@
+                    <div>
+                        <label>
+                            <input type="checkbox" value="All" class="RQlistbox-checkbox"> 全部
+                        </label>
+                        <label>
+                            <input type="checkbox" value="Tr" class="RQlistbox-checkbox"> 變壓器
+                        </label>
+                        <label>
+                            <input type="checkbox" value="Relay" class="RQlistbox-checkbox"> 保護電驛
+                        </label>
+                        <label>
+                            <input type="checkbox" value="Inv" class="RQlistbox-checkbox"> 變流器
+                        </label>
+                        <label>
+                            <input type="checkbox" value="Other" class="RQlistbox-checkbox"> 其他
+                        </label>
+                    </div>
+                    <div class="submitbtn">
+                        <button class="AHquery" v-onclick="AHquery" type="submit">
+                            查詢
+                        </button>
+
+                    </div>
+                </div>
+            </form>
+            <div class="AHtable">
+                <table>
+                    <colgroup>
+                        <col span="1" class="AHeventtime">
+                        <col span="1" class="AHalarmname">
+                        <col span="1" class="AHalarmmessage">
+                        <col span="1" class="AHalarmstatus">
+                    </colgroup>
+                    <thead>
+                        <tr class="AHtabletitle">
+                            <th><div>警報時間</div></th>
+                            <th><div>警報名稱</div></th>
+                            <th><div>警報內容</div></th>
+                            <th><div>警報狀態</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- The table body will contain the data rows -->
+                    </tbody>
+
+                </table>
+
+
+
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <script>
+        window.datetimepicker1 = new tempusDominus.TempusDominus(
+            document.getElementById('datetimepicker1'),
+            {
+                display: {
+                    sideBySide: true,
+                    viewMode: 'years',
+                    toolbarPlacement: 'top',
+                    buttons: {
+                        today: 'true',
+                        clear: 'true'
+                    },
+
+
+
+
+                },
+                localization: {
+                    hourCycle: 'h24',
+                    format: 'yyyy-MM-dd HH:mm:00'
+                },
+            }
+        );
+        window.datetimepicker1 = new tempusDominus.TempusDominus(
+            document.getElementById('datetimepicker2'),
+            {
+                display: {
+                    sideBySide: true,
+                    viewMode: 'years',
+                    toolbarPlacement: 'top',
+                    buttons: {
+                        today: 'true',
+                        clear: 'true'
+                    },
+
+
+
+
+                },
+                localization: {
+                    hourCycle: 'h24',
+                    format: 'yyyy-MM-dd HH:mm:00',
+                },
+            }
+        );
+
+
+    </script>
+    <script type="text/javascript">
+
+
+
+        $(document).ready(function () {
+
+            // Define your replacement dictionary
+            // Convert C# replacementDictionary to JavaScript object
+            var replacementDictionary = JSON.parse('@Html.Raw(Json.Serialize(replacementDictionary))');
+
+
+            // Attach click event to the "查詢" button
+            $("#filterForm").on("submit", function (event) {
+                // Prevent the default form submission behavior
+                event.preventDefault();
+                // Get selected datetime values
+                var startDate = $("#datetimepicker1Input").val();
+                var endDate = $("#datetimepicker2Input").val();
+
+
+
+
+
+
+                // Get selected checkbox values
+                var selectedCheckboxes = [];
+                $(".RQlistbox-checkbox:checked").each(function () {
+                    selectedCheckboxes.push($(this).val());
+                });
+
+                // Check if the datetime picker inputs are empty
+                if (!startDate || !endDate || selectedCheckboxes.length === 0) {
+                    // Display an alert indicating that the inputs are required
+                    alert("請選擇日期時間以及顯示項目");
+                    return;
+                }
+
+
+
+                // Send AJAX request
+                $.ajax({
+                    type: "POST", // or "GET" depending on your controller action
+                    url: "/Home/AlarmHistoryTable", // Replace with the actual controller and action name
+                    data: {
+                        startDate: startDate,
+                        endDate: endDate,
+                        selectedCheckboxes: selectedCheckboxes
+                    },
+
+
+                    success: function (data) {
+
+                        //Clear previous table rows
+                        var tableBody = $(".AHtable tbody");
+                        tableBody.empty();
+
+                         // Preprocess time values to remove 'T' and sort data by "name" values
+                         data.forEach(function (item) {
+                             item.time = item.eventTime.replace('T', ' ');
+                         });
+
+
+                        if (data.length > 0) {
+                            data.forEach(function (item) {
+
+                                // Determine the text to display based on the alarmStatus
+                                var statusText = item.alarmStatus === "0" ?  "<span class='off-text'>OFF</span>":"<span class='on-text'>ON!</span>";
+
+
+                                // Check if the alarm message exists in the replacement dictionary
+                                var alarmMessage = item.alarmMessage;
+                                if (replacementDictionary.hasOwnProperty(alarmMessage)) {
+                                    // Replace the alarm message with the corresponding value from the dictionary
+                                    alarmMessage = replacementDictionary[alarmMessage];
+                                }
+                               
+
+                                tableBody.append("<tr>" +
+                                    "<td>" + item.time + "</td>" +
+                                    "<td>" + item.alarmName + "</td>" +
+                                    "<td>" + alarmMessage + "</td>" +
+                                    "<td>" + statusText + "</td>" +
+                                    "</tr>");
+                            });
+                        }
+                        else {
+                            // If data is empty, show a message in the table
+                            tableBody.append("<tr><td colspan='4'>No data available within the time line</td></tr>");
+                        }
+                    },
+
+
+
+
+
+
+                    error: function (xhr, textStatus, errorThrown) {
+                        alert("Error fetching data from the server.");
+                    }
+                });
+            });
+        });
+
+
+        // $(".RQlistbox-checkbox").change(function () {
+        //     // Uncheck all checkboxes except the current one
+        //     $(".RQlistbox-checkbox").not(this).prop("checked", false);
+
+        //var selectedOption = $(this).val();
+
+        //// Hide all dropdown boxes initially
+        //$("#ac-listbox").hide();
+        //$("#ov-listbox").hide();
+        //$("#inv-listbox").hide();
+
+        //switch (selectedOption) {
+        //    case "AC":
+        //        $("#ac-listbox").show();
+
+        //        break;
+        //    case "OV":
+        //        $("#ov-listbox").show();
+
+        //        break;
+        //    case "Inv01":
+        //    case "Inv02":
+        //    case "Inv03":
+        //    case "Inv04":
+        //    case "Inv05":
+        //    case "Inv06":
+        //    case "Inv07":
+        //        $("#inv-listbox").show();
+
+        //        break;
+        //    default:
+        //        break;
+        //}
+        // });
+
+
+    </script>
+
+    @*         <script>
+            //Single Check
+        $(document).ready(function () {
+            $('input[type="checkbox"]').change(function () {
+                $('input[type="checkbox"]').not(this).prop('checked', false);
+            });
+        });
+
+        $(document).ready(function () {
+            $('input[type="checkbox"]').change(function () {
+                if ($('#checkbox1').is(':checked')) {
+                    selectedOption1 = 'and v0=57881';
+                } else if ($('#checkbox2').is(':checked')) {
+                    selectedOption1 = 'and v0=0';
+                } else {
+                    selectedOption1 = ' '; // Set the default value when neither checkbox is checked
+                }
+                // Store the selectedOption1 value in a hidden input field
+                $('#hiddenAlarmStatus').val(selectedOption1);
+            });
+        });
+
+
+
+
+
+
+        document.getElementById("AHfilterBtn").addEventListener("click", function () {
+
+                var selectedOption1 = $('#hiddenAlarmStatus').val();
+            var selectedOption2 = document.getElementById("datetimepicker1Input").value;
+                //var selectedOption3 = document.getElementById("time1").value;
+            var selectedOption4 = document.getElementById("datetimepicker2Input").value;
+                //var selectedOption5 = document.getElementById("time2").value;
+
+            var url = "/home/AlarmHistory?alarmstatus=" + selectedOption1 + "&datetimefrom=" + selectedOption2 + "&datetimeto=" + selectedOption4;
+            window.location.href = url;
+            //var url = "/home/AlarmHistory?alarmstatus=" + selectedOption1 + "&datetimefrom=" + selectedOption2 + " " + selectedOption3 + "&datetimeto=" + selectedOption4 + " " + selectedOption5;
+            //    window.location.href = url;
+            });
+    </script>
+ *@
+}

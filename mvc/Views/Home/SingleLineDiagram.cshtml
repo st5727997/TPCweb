@@ -1,0 +1,663 @@
+﻿@using System.Reflection
+
+@{
+
+    List<PowerEquipmentStatusModel> powerEquipmentModels = ViewBag.PESModels;
+    List<ConverterInfoModel> converterInfoModels = ViewBag.ConverterInfoModels as List<ConverterInfoModel>;
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string stationName = $"彰林E/S光電站({converterInfoModels[0].InvCap}kWp)";
+    string siteName = converterInfoModels[0]?.DB_Name;
+    double initialGap = -83;
+    double spacing = 112;
+    double initialGap2 = -555;
+    double spacing2 = 112;
+    double initialGap3 = -1030;
+    double spacing3 = 112;
+    
+
+
+    string invACA = converterInfoModels[0].invACA;
+    string invACV = converterInfoModels[0].invACV;
+    string invACkW = converterInfoModels[0].invACkW;
+    string invACkWh = converterInfoModels[0].invACkWh;
+
+
+
+
+
+    string BGimg1 = "29_LineDiagram.png";
+    string BGimg2 = "";
+    string BGimg3 = "";
+    string BGimg4 = "";
+    string BGimg5 = "";
+    string BGimg6 = "";
+    string BGimg7 = "";
+    string BGimg8 = "";
+    string BGimg9 = "";
+    string BGimg10 = "";
+    string BGimg11 = "";
+    string BGimg12 = "";
+
+
+    string[] BGimgs = { BGimg1, BGimg2, BGimg3, BGimg4, BGimg5, BGimg6, BGimg7, BGimg8, BGimg9, BGimg10, BGimg11, BGimg12 };
+    int maxSLDimgs = 12;
+
+
+
+
+
+    List<List<List<string>>> powerMeterDataNames = powerEquipmentModels[0].PowerMeterDataNames;
+
+
+
+
+    int inverterCount = (int)converterInfoModels[0].invCount;
+
+
+
+    List<string> invMaxCaps = converterInfoModels[0].eachInvCap;
+
+
+
+    List<string> inverterDataUnits = new List<string>
+    {
+        "A",
+        "V",
+        "kW",
+        "kWh",
+    };
+
+
+
+
+    // Define the text color function
+    string GetTextColor(double? Status)
+    {
+        switch (Status)
+        {
+
+            case 0: return "#FF0000";
+            case 1: return "#00FF00";
+            case 2: return "#FFFF00";
+
+            default: return "white";
+        }
+
+
+
+    }
+
+    double? GetInvStatus(string statusItem, int index)
+    {
+        string propertyName = $"CIInv{index + 1:D2}{statusItem}"; // Format the property name with leading zeros
+        PropertyInfo? propertyInfo = typeof(ConverterInfoModel).GetProperty(propertyName);
+        if (propertyInfo != null)
+        {
+            return (double?)propertyInfo.GetValue(converterInfoModels?.FirstOrDefault());
+        }
+        return null;
+    }
+
+    string GetImagePath(double? status)
+    {
+        switch (status)
+        {
+
+            case 0: return Url.Content("~/images/Button_G.svg");
+            case 1: return Url.Content("~/images/Button_R.svg");
+            default: return Url.Content("~/images/Button_G.svg");
+        }
+
+    }
+
+
+    PowerEquipmentStatusModel? powerMeterdata = powerEquipmentModels?.FirstOrDefault();
+
+
+    ConverterInfoModel? Invdata = converterInfoModels?.FirstOrDefault();
+
+    double?[] InvA = new double?[inverterCount];
+    double?[] InvV = new double?[inverterCount];
+    double?[] InvkW = new double?[inverterCount];
+    double?[] InvkWh = new double?[inverterCount];
+
+    string FormatDataNames(string dataName, int i)
+    {
+        string digits = "";
+        string formatedName = "";
+        if (dataName.Contains("{i:D2}"))
+        {
+            digits = $"{i:D2}";
+            formatedName = dataName.Replace("{i:D2}", digits);
+        }
+        else
+        {
+            digits = i.ToString();
+            formatedName = dataName.Replace("{i}", digits);
+        }
+        return formatedName;
+    }
+
+    for (int i = 0; i < inverterCount; i++)
+    {
+
+        double? CIInvACA = (double?)Invdata?.GetType().GetProperty($"{FormatDataNames(invACA, i + 1)}")?.GetValue(Invdata, null);
+        double? CIInvACV = (double?)Invdata?.GetType().GetProperty($"{FormatDataNames(invACV, i + 1)}")?.GetValue(Invdata, null);
+        double? CIInvACkW = (double?)Invdata?.GetType().GetProperty($"{FormatDataNames(invACkW, i + 1)}")?.GetValue(Invdata, null);
+        double? CIInvACkWh = (double?)Invdata?.GetType().GetProperty($"{FormatDataNames(invACkWh, i + 1)}")?.GetValue(Invdata, null);
+
+        InvA[i] = new double?[] { CIInvACA }.Sum();
+        InvV[i] = new double?[] { CIInvACV }.Average();
+        InvkW[i] = new double?[] { CIInvACkW }.Average();
+        InvkWh[i] = CIInvACkWh;
+    }
+
+
+
+}
+
+<link rel="stylesheet" href="/css/SingleLineDiagram/SingleLineDiagram.css">
+<script>
+    setInterval(function () {
+        location.reload();
+    }, 10000);
+</script>
+<div class="contentdetailbox" id="app">
+
+    <div class="submenulist">
+        <div class="attensionneededsublist">
+            <span id="">電力單線圖</span>
+            <span class="stationname">@stationName</span>
+        </div>
+
+
+
+    </div>
+    <div class="submenudetailWhite">
+
+
+        <div class="SLDsubmenudetail">
+            @for (int i = 1; i <= maxSLDimgs; i++)
+            {
+                var imagePath = $"../images/PNG_Files/{BGimgs[i - 1]}";
+                <img src="@imagePath" alt="" class="background-image">
+            }
+
+
+            @Html.Partial("(SLD)SingleLineDiagram/_index")
+
+
+            @{
+                List<List<string>>? switchNames = powerEquipmentModels[0]?.SwitchNames;
+                int DSSwitchesCount = switchNames[0].Count;
+                int ESSwitchesCount = switchNames[1].Count;
+                int ACPMSwitchesCount = switchNames[2].Count;
+                int ACBSwitchesCount = switchNames[3].Count;
+                int GCBSwitchesCount = switchNames[4].Count;
+                int VCBSwitchesCount = switchNames[5].Count;
+                int MCCBSwitchesCount = switchNames[6].Count;
+                int WPSwitchesCount = switchNames[7].Count;
+                List<int> switchCountTypes = new List<int>
+            {
+            DSSwitchesCount,
+            ESSwitchesCount,
+            ACPMSwitchesCount,
+            ACBSwitchesCount,
+            GCBSwitchesCount,
+            VCBSwitchesCount,
+            MCCBSwitchesCount,
+            WPSwitchesCount,
+            };
+                List<string> switchTypeNames = new List<string>
+            {
+            "DS",
+            "ES",
+            "ACPM",
+            "ACB",
+            "GCB",
+            "VCB",
+            "MCCB",
+            "WP"
+            };
+
+                double? GetSwitchValue(string switchName, PowerEquipmentStatusModel powerMeterdata)
+                {
+                    double? switchValue = (double?)powerMeterdata?.GetType().GetProperty(switchName)?.GetValue(powerMeterdata, null);
+                    return switchValue;
+                }
+
+                List<List<double?>>? switchValues = new List<List<double?>>();
+                for (int k = 0; k < switchNames.Count; k++)
+                {
+                    List<double?>? tempContainer = new List<double?>(); 
+                    for (int i = 0; i < switchNames[k].Count; i++)
+                    {
+
+                        tempContainer.Add(GetSwitchValue(switchNames[k][i], powerMeterdata));
+
+                    }
+                    switchValues.Add(tempContainer);
+                }
+
+
+                for (int k = 0; k < switchCountTypes.Count; k++)
+                {
+                    for (int i = 1; i <= switchCountTypes[k]; i++)
+                    {
+                        <div id="@(switchTypeNames[k])_Switch@(i)">
+                            <img class="btnimg" src="@GetImagePath(switchValues[k][i-1])" />
+                        </div>
+                    }
+                }
+            }
+
+
+
+
+            @{
+                int acbPMCount = powerMeterDataNames[0].Count;
+                int gcbPMCount = powerMeterDataNames[1].Count;
+                int vcbPMCount = powerMeterDataNames[2].Count;
+                int mccbPMCount = powerMeterDataNames[3].Count;
+                int wpPMCount = powerMeterDataNames[4].Count;
+                double?[] GetPMDataValues(List<string> dataNames, PowerEquipmentStatusModel powerMeterdata)
+                {
+                    double?[] dataValues = new double?[dataNames.Count];
+
+                    for (int i = 0; i < dataNames.Count; i++)
+                    {
+                        // Use reflection to get the property value
+                        object? propertyValue = powerMeterdata?.GetType().GetProperty(dataNames[i])?.GetValue(powerMeterdata, null);
+
+                        dataValues[i] = propertyValue as double?;
+                    }
+                    return dataValues;
+                }
+                double? CalculateTotalCurrent(double?[] currentValues)
+                {
+                    double? totalCurrent = currentValues.Sum();
+                    return totalCurrent;
+                }
+                double? CalculateTotalVoltage(double?[] voltageValues)
+                {
+                    double? totalVoltage = voltageValues.Average();
+                    return totalVoltage;
+                }
+                double? CalculateTotalPower(double?[] powerValues)
+                {
+                    double? totalPower = powerValues.Average();
+                    return totalPower;
+                }
+
+
+                List<string> GetVoltageNames(int deviceType, int deviceNumberIndex)
+                {
+
+                    List<string> VNames = new List<string>();
+
+                    for (int nameIndex = 0; nameIndex < 3; nameIndex++)
+                    {
+                        VNames.Add(powerMeterDataNames[deviceType][deviceNumberIndex][nameIndex]);
+                    }
+
+
+                    return VNames;
+                };
+                List<string> GetCurrentNames(int deviceType, int deviceNumberIndex)
+                {
+
+                    List<string> ANames = new List<string>();
+           
+                        for (int i = 3; i < 6; i++)
+                        {
+                            ANames.Add(powerMeterDataNames[deviceType][deviceNumberIndex][i]);
+
+                        }
+
+
+                    return ANames;
+                };
+                List<string> GetPowerNames(int deviceType, int deviceNumberIndex)
+                {
+
+                    List<string> KWNames = new List<string>();
+                    for (int j = 0; j < powerMeterDataNames[deviceType].Count; j++)
+                    {
+                        KWNames.Add(powerMeterDataNames[deviceType][j][6]);
+                    }
+                    return KWNames;
+                };
+                List<string> GetEnergyNames(int deviceType, int deviceNumberIndex)
+                {
+
+                    List<string> KWHNames = new List<string>();
+                    for (int j = 0; j < powerMeterDataNames[deviceType].Count; j++)
+                    {
+                        KWHNames.Add(powerMeterDataNames[deviceType][j][7]);
+                    }
+                    return KWHNames;
+                };
+            }
+            @for (int i = 1; i <= acbPMCount; i++)
+            {
+                int acbIndex = 0;
+                List<string> acbVNames = GetVoltageNames(acbIndex, i - 1);
+                List<string> acbANames = GetCurrentNames(acbIndex, i - 1);
+                List<string> acbKWNames = GetPowerNames(acbIndex, i - 1);
+                List<string> acbKWHNames = GetEnergyNames(acbIndex, i - 1);
+
+                double? acbA = CalculateTotalCurrent(GetPMDataValues(acbANames, powerMeterdata));
+                double? acbV = CalculateTotalVoltage(GetPMDataValues(acbVNames, powerMeterdata));
+                double? acbKW = CalculateTotalPower(GetPMDataValues(acbKWNames, powerMeterdata));
+                double? acbKWH = GetPMDataValues(acbANames, powerMeterdata)?[0];
+
+
+                <div class="ACB@(i)">
+                    <div class="inverterdata">
+
+                        <input type="text" readonly value="@acbA">
+                        <input type="text" readonly value="@acbV">
+                        <input type="text" readonly value="@acbKW">
+                        <input type="text" readonly value="@acbKWH">
+
+                    </div>
+                    <div class="inverterdataunits">
+                        @foreach (string inverterDataUnit in inverterDataUnits)
+                        {
+                            <div class="dataunits">@inverterDataUnit</div>
+                        }
+
+                    </div>
+
+                </div>
+
+            }
+
+            @for (int i = 1; i <= vcbPMCount; i++)
+            {
+                int vcbIndex = 2;
+                List<string> vcbVNames = GetVoltageNames(vcbIndex, i - 1);
+                List<string> vcbANames = GetCurrentNames(vcbIndex, i - 1);
+                List<string> vcbKWNames = GetPowerNames(vcbIndex, i - 1);
+                List<string> vcbKWHNames = GetEnergyNames(vcbIndex, i - 1);
+
+                double? vcbA = CalculateTotalCurrent(GetPMDataValues(vcbANames, powerMeterdata));
+                double? vcbV = CalculateTotalVoltage(GetPMDataValues(vcbVNames, powerMeterdata));
+                double? vcbKW = CalculateTotalPower(GetPMDataValues(vcbKWNames, powerMeterdata));
+                double? vcbKWH = GetPMDataValues(vcbANames, powerMeterdata)?[0];
+
+                <div class="VCB@(i)">
+                    <div class="inverterdata">
+
+                        <input type="text" readonly value="@vcbA">
+                        <input type="text" readonly value="@vcbV">
+                        <input type="text" readonly value="@vcbKW">
+                        <input type="text" readonly value="@vcbKWH">
+
+                    </div>
+                    <div class="inverterdataunits">
+                        @foreach (string inverterDataUnit in inverterDataUnits)
+                        {
+                            <div class="dataunits">@inverterDataUnit</div>
+                        }
+
+                    </div>
+
+                </div>
+
+            }
+
+            @for (int i = 1; i <= gcbPMCount; i++)
+            {
+                int gcbIndex = 1;
+                List<string> gcbVNames = GetVoltageNames(gcbIndex, i - 1);
+                List<string> gcbANames = GetCurrentNames(gcbIndex, i - 1);
+                List<string> gcbKWNames = GetPowerNames(gcbIndex, i - 1);
+                List<string> gcbKWHNames = GetEnergyNames(gcbIndex, i - 1);
+
+                double? gcbA = CalculateTotalCurrent(GetPMDataValues(gcbANames, powerMeterdata));
+                double? gcbV = CalculateTotalVoltage(GetPMDataValues(gcbVNames, powerMeterdata));
+                double? gcbKW = CalculateTotalPower(GetPMDataValues(gcbKWNames, powerMeterdata));
+                double? gcbKWH = GetPMDataValues(gcbANames, powerMeterdata)?[0];
+
+
+                <div class="GCB@(i)">
+                    <div class="inverterdata">
+                        <input type="text" readonly value="@gcbA">
+                        <input type="text" readonly value="@gcbV">
+                        <input type="text" readonly value="@gcbKW">
+                        <input type="text" readonly value="@gcbKWH">
+
+                    </div>
+                    <div class="inverterdataunits">
+                        @foreach (string inverterDataUnit in inverterDataUnits)
+                        {
+                            <div class="dataunits">@inverterDataUnit</div>
+                        }
+                    </div>
+
+                </div>
+            }
+
+            @for (int i = 1; i <= mccbPMCount; i++)
+            {
+
+                int mccbIndex = 3;
+                List<string> mccbVNames = GetVoltageNames(mccbIndex, i - 1);
+                List<string> mccbANames = GetCurrentNames(mccbIndex, i - 1);
+                List<string> mccbKWNames = GetPowerNames(mccbIndex, i - 1);
+                List<string> mccbKWHNames = GetEnergyNames(mccbIndex, i - 1);
+
+
+                double? mccbA = CalculateTotalCurrent(GetPMDataValues(mccbANames, powerMeterdata));
+                double? mccbV = CalculateTotalVoltage(GetPMDataValues(mccbVNames, powerMeterdata));
+                double? mccbKW = CalculateTotalPower(GetPMDataValues(mccbKWNames, powerMeterdata));
+                double? mccbKWH = GetPMDataValues(mccbANames, powerMeterdata)?[0];
+
+
+                <div class="mccb@(i)">
+                    <div class="inverterdata">
+                        <input type="text" readonly value="@mccbA">
+                        <input type="text" readonly value="@mccbV">
+                        <input type="text" readonly value="@mccbKW">
+                        <input type="text" readonly value="@mccbKWH">
+
+                    </div>
+                    <div class="inverterdataunits">
+                        @foreach (string inverterDataUnit in inverterDataUnits)
+                        {
+                            <div class="dataunits">@inverterDataUnit</div>
+                        }
+                    </div>
+
+                </div>
+            }
+
+            @for (int i = 1; i <= wpPMCount; i++)
+            {
+
+
+                int wpIndex = 4;
+                List<string> wpVNames = GetVoltageNames(wpIndex, i - 1);
+                List<string> wpANames = GetCurrentNames(wpIndex, i - 1);
+                List<string> wpKWNames = GetPowerNames(wpIndex, i - 1);
+                List<string> wpKWHNames = GetEnergyNames(wpIndex, i - 1);
+
+
+                double? wpA = CalculateTotalCurrent(GetPMDataValues(wpANames, powerMeterdata));
+                double? wpV = CalculateTotalVoltage(GetPMDataValues(wpVNames, powerMeterdata));
+                double? wpKW = CalculateTotalPower(GetPMDataValues(wpKWNames, powerMeterdata));
+                double? wpKWH = GetPMDataValues(wpANames, powerMeterdata)?[0];
+                <div class="wp@(i)">
+                    <div class="inverterdata">
+                        <input type="text" readonly value="@wpA">
+                        <input type="text" readonly value="@wpV">
+                        <input type="text" readonly value="@wpKW">
+                        <input type="text" readonly value="@wpKWH">
+
+                    </div>
+                    <div class="inverterdataunits">
+                        @foreach (string inverterDataUnit in inverterDataUnits)
+                        {
+                            <div class="dataunits">@inverterDataUnit</div>
+                        }
+                    </div>
+
+                </div>
+            }
+
+
+            @for (int i = 0; i < inverterCount; i++)
+            {
+                if (i >= 3 && i <= 5)
+                {
+                    <div class="inverterstatusbox@(i+1) @((i+1)%2 == 0? "even2" : "odd2") invstatusbox" style=" left:@((i-3)*spacing2-initialGap2)px;">
+                        <button class="inverterbtn" id="Inv01" data-value="Converter" style="color:@Html.Raw(GetTextColor(GetInvStatus("Status", i)))">
+                            Inverter-@((i + 1))
+                        </button>
+                        <div class="inverterstatusdetail">
+                            <div class="inverterdata">
+                                @if (i >= 0 && i < invMaxCaps.Count)
+                                {
+                                    <div class="textblack">@invMaxCaps[i]</div>
+                                }
+                                else
+                                {
+                                    <div class="textblack">Index out of range</div>
+                                }
+                                <input type="text" readonly value="@InvA[i]">
+                                <input type="text" readonly value="@InvV[i]">
+                                <input type="text" readonly value="@InvkW[i]">
+                                <input type="text" readonly value="@InvkWh[i]">
+                            </div>
+                            <div class="inverterdataunits">
+                                <div class="dataunits">kWp</div>
+                                @foreach (string inverterDataUnit in inverterDataUnits)
+                                {
+                                    <div class="dataunits">@inverterDataUnit</div>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+
+                }
+                else if (i >= 6)
+                {
+                    <div class="inverterstatusbox@(i+1) @((i+1)%2 == 0? "even3" : "odd3") invstatusbox" style=" left:@((i-6)*spacing3-initialGap3)px;">
+                        <button class="inverterbtn" id="Inv01" data-value="Converter" style="color:@Html.Raw(GetTextColor(GetInvStatus("Status", i)))">
+                            Inverter-@((i + 1))
+                        </button>
+                        <div class="inverterstatusdetail">
+                            <div class="inverterdata">
+                                @if (i >= 0 && i < invMaxCaps.Count)
+                                {
+                                    <div class="textblack">@invMaxCaps[i]</div>
+                                }
+                                else
+                                {
+                                    <div class="textblack">Index out of range</div>
+                                }
+                                <input type="text" readonly value="@InvA[i]">
+                                <input type="text" readonly value="@InvV[i]">
+                                <input type="text" readonly value="@InvkW[i]">
+                                <input type="text" readonly value="@InvkWh[i]">
+                            </div>
+                            <div class="inverterdataunits">
+                                <div class="dataunits">kWp</div>
+                                @foreach (string inverterDataUnit in inverterDataUnits)
+                                {
+                                    <div class="dataunits">@inverterDataUnit</div>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+
+                }
+                else
+                {
+                    <div class="inverterstatusbox@(i+1) @((i+1)%2 == 0? "even" : "odd") invstatusbox" style=" left:@(i*spacing-initialGap)px;">
+                        <button class="inverterbtn" id="Inv01" data-value="Converter" style="color:@Html.Raw(GetTextColor(GetInvStatus("Status", i)))">
+                            Inverter-@((i + 1))
+                        </button>
+                        <div class="inverterstatusdetail">
+                            <div class="inverterdata">
+                                @if (i >= 0 && i < invMaxCaps.Count)
+                                {
+                                    <div class="textblack">@invMaxCaps[i]</div>
+                                }
+                                else
+                                {
+                                    <div class="textblack">Index out of range</div>
+                                }
+                                <input type="text" readonly value="@InvA[i]">
+                                <input type="text" readonly value="@InvV[i]">
+                                <input type="text" readonly value="@InvkW[i]">
+                                <input type="text" readonly value="@InvkWh[i]">
+                            </div>
+                            <div class="inverterdataunits">
+                                <div class="dataunits">kWp</div>
+                                @foreach (string inverterDataUnit in inverterDataUnits)
+                                {
+                                    <div class="dataunits">@inverterDataUnit</div>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+
+                }
+            }
+
+
+
+
+
+
+
+            <div class="txtspare2">
+
+                <div class="txtspare3">
+                </div>
+                <div class="txtspare4">
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var buttonContainer = document.body;
+
+            buttonContainer.addEventListener("click", function (event) {
+                // Check if the clicked element is a button with the specified class
+                if (event.target.classList.contains("inverterbtn")) {
+                    // Get the data-value attribute of the clicked button
+
+                    var btnValue = event.target.getAttribute("data-value");
+                    console.log(btnValue)
+                    // Generate the target URL based on the button value
+                    var targetURL = "/home/" + btnValue;
+                    // Navigate to a different view page
+                    window.location.href = targetURL;
+                }
+            });
+
+        });
+
+
+
+    </script>
+    }

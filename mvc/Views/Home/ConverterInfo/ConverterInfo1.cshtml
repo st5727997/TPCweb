@@ -1,0 +1,348 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using mvc.Models;
+@using System.Reflection
+
+
+
+
+
+
+@{
+
+    List<ConverterInfoModel> converterInfoModels = ViewBag.ConverterInfoModels as List<ConverterInfoModel>;
+  
+
+    List<string> units = new List<string>
+    {
+    "kW",
+    "kVAR",
+    "kWh",
+    "kWh"
+    };
+
+    List<string> dataNames = new List<string>
+    {
+    "全變流器總實功率",
+    "全變流器總虛功率",
+    "全變流器本日發電量",
+    "全變流器總累積發電量"
+    };
+    double invCount = converterInfoModels[0].invCount;
+    List<string> activeInvs = new List<string>();
+    for (int i = 1; i <= invCount; i++)
+    {
+        string invStatusPropertyName = $"CIInv{i:D2}Status";
+        double invStatusValue = (double)converterInfoModels[0].GetType().GetProperty(invStatusPropertyName).GetValue(converterInfoModels[0]);
+        
+        if (invStatusValue == 1)
+        {
+            activeInvs.Add(invStatusPropertyName);
+        }
+
+
+    }
+
+
+
+    List<string> invNames = new List<string>
+    {
+       "全變流器",
+    };
+
+
+    List<List<string>> dataKeys = new List<List<string>>();
+
+    for (int i = 1; i <= dataNames.Count; i++)
+    {
+        List<string> dataKey = new List<string>
+    {
+
+         "totalInvACkW",
+        "totalInvACkVAR",
+        "totalInvACDailykWh",
+        "totalInvACkWh"
+    };
+
+        dataKeys.Add(dataKey);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    string GetDisplayValue(double? value)
+    {
+        if (value == -999 || value == null)
+        {
+            return "N/A";
+        }
+        else
+        {
+            // Limiting the displayed decimals to 2 digits after the decimal point
+            return Math.Round(value ?? 0, 2).ToString("#,0.##");
+            // return value.ToString();
+        }
+        // return value == -999 ? "N/A" : value.ToString();
+    }
+
+
+
+
+}
+
+
+
+<link rel="stylesheet" href="/css/ConverterInfo.css">
+
+
+
+<div class="submenudetail">
+    <div class="CIbackgroundbox1">
+       
+        <div id="chart" class="chart-container halfBGbox"></div>
+       
+        @for (int i = 0; i < invNames.Count; i++)
+        {
+            <div class=" halfBGbox">
+            <div class="CIbox">
+                <div class="CIheading">
+                    <div class="CIconverterstatusbar1">
+                        <span class="CIconvertername" id="converter">@invNames[i]</span>
+
+                    </div>
+
+
+                </div>
+
+                <div class="CIconverterdetailbox">
+
+                    
+                    @*first column*@
+                    <div>
+                        @{
+                           
+
+                            for (int j = 0; j < dataNames.Count; j++)
+                            {
+
+
+
+
+                                <div class="CIrows">
+                                    <div class="CInames">
+                                        <div>@dataNames[j]</div>
+
+
+                                    </div>
+                                    <div class="CIdata">
+                                        <div>
+                                            @{
+                                                PropertyInfo propertyInfo = typeof(ConverterInfoModel).GetProperty(dataKeys[i][j]);
+                                                if (propertyInfo != null)
+                                                {
+                                                    var value = propertyInfo?.GetValue(converterInfoModels.FirstOrDefault());
+
+                                                    <span>@GetDisplayValue((double?)value)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>N/A</span>
+                                                }
+
+
+
+                                            }
+                                        </div>
+
+                                    </div>
+                                    <div class="CIunits">
+
+                                        <div>@units[j]</div>
+
+
+
+                                    </div>
+                                </div>
+
+
+
+
+
+
+
+
+
+                            }
+
+                        }
+                    </div>
+                    
+
+
+                </div>
+            </div>
+            </div>
+
+
+        }
+
+
+        
+
+    </div>
+    
+</div>
+
+<script>
+    
+
+        
+
+        var denominator = @invCount;
+
+        var numerator = @activeInvs.Count;
+
+
+
+
+        var ratio = numerator / denominator * 100;
+
+        var pie = d3.layout.pie()
+            .value(function (d) { return d })
+            .sort(null);
+
+        var w = 500, h = 500;
+
+        var outerRadius = (w / 2) - 10;
+        var innerRadius = 85;
+
+
+    var color = ['#f72b02', '#7ade4d', '#888888'];
+
+        var colorOld = '#F00';
+        var colorNew = '#0F0';
+
+        var arc = d3.svg.arc()
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius)
+            .startAngle(0)
+            .endAngle(Math.PI);
+
+
+        var arcLine = d3.svg.arc()
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius)
+            .startAngle(0);
+
+        var svg = d3.select("#chart")
+            .append("svg")
+            .attr({
+                width: w,
+                height: h,
+                class: 'shadow'
+            }).append('g')
+            .attr({
+                transform: 'translate(' + w / 2 + ',' + h / 2 + ')'
+            });
+
+
+
+        var path = svg.append('path')
+            .attr({
+                d: arc,
+                transform: 'rotate(-90)'
+            }).attr({
+                'stroke-width': "1",
+                stroke: "#666666"
+            })
+            .style({
+                fill: color[0]
+            });
+
+
+        var pathForeground = svg.append('path')
+            .datum({ endAngle: 0 })
+            .attr({
+                d: arcLine,
+                transform: 'rotate(-90)'
+            })
+            .style({
+                fill: function (d, i) {
+                    return color[1];
+                }
+            });
+
+
+        var middleCount = svg.append('text')
+            .datum(0)
+            .text(function (d) {
+                return d;
+            })
+            .attr({
+                class: 'middleText',
+                'text-anchor': 'middle',
+                dy: 0,
+                dx: 5
+            })
+            .style({
+                fill: d3.rgb('#000000'),
+                'font-size': '55px'
+
+
+
+            });
+
+            var titileText = svg.append('text')
+            .text('運行中變流器數量('+@activeInvs.Count+'/'+@invCount+')')
+            .attr({
+                class: 'titleText',
+                'text-anchor':'middle',
+                dy:50,
+                dx:5
+            
+            })
+        .style({
+            fill: d3.rgb('#000000'),
+            'font-size': '40px'
+
+
+
+        });
+
+        var oldValue = 0;
+        var arcTween = function (transition, newValue, oldValue) {
+            transition.attrTween("d", function (d) {
+                var interpolate = d3.interpolate(d.endAngle, ((Math.PI)) * (newValue / 100));
+
+                var interpolateCount = d3.interpolate(oldValue, newValue);
+
+                return function (t) {
+                    d.endAngle = interpolate(t);
+                    middleCount.text(Math.floor(interpolateCount(t)) + '%');
+
+                    return arcLine(d);
+                };
+            });
+        };
+
+
+        pathForeground.transition()
+            .duration(750)
+            .ease('cubic')
+            .call(arcTween, ratio, oldValue);
+   
+</script>
+
+

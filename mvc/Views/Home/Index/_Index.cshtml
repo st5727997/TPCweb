@@ -1,0 +1,203 @@
+﻿@using Models.IndexModels;
+@using mvc.Models.IndexModels;
+@{
+    List<IndexModel> indexModels = ViewBag.indexModels;
+    List<CalIndexModel> calIndexModels = ViewBag.CalIndexModels;
+    List<ConverterInfoModel>? converterInfoModels = ViewBag.ConverterInfoModels as List<ConverterInfoModel>;
+    //var InvCap = converterInfoModels[0]?.InvCap;
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = null;
+
+    string GetDisplayValue(double? value)
+    {
+        if (value == -999 || value == null)
+        {
+            return "N/A";
+        }
+        else
+        {
+            // Limiting the displayed decimals to 2 digits after the decimal point
+            return Math.Round(value ?? 0, 2).ToString("#,0.##");
+            // return value.ToString();
+        }
+        // return value == -999 ? "N/A" : value.ToString();
+    }
+
+}
+@*<link rel="stylesheet" href="/css/Index.css">
+
+<div class="contentdetailbox" id="app">*@
+
+<div class="submenulist">
+    <div class="attensionneededsublist">
+        <span id="">運轉資料</span>
+
+    </div>
+
+</div>
+
+<div class="submenudetail">
+
+
+
+
+
+
+
+    <div class="Indexbackgroundbox1">
+        <div class="Indexinfobox1">
+            <table class="table1">
+
+                @{
+                    foreach (IndexModel indexModel in indexModels)
+                    {
+                        <tr>
+                            <td class="Indexdetailheading" colspan="3">
+                                <span class="Indexgeneratedpower">系統發電資訊</span>(裝置容量: <span class="Indexinvertercapacity"> @converterInfoModels?[0]?.InvCap</span> kWp)
+                            </td>
+                        </tr>
+                        <tr class="Indextoprow">
+                            <td class="Indexdetailname"><div>毛發電功率:</div></td>
+                            <td class="Indexdata">
+                                <div>
+
+                                    <input type="text" readonly id="" class="" value="@GetDisplayValue(indexModel.PESACTotalKW)">
+                                </div>
+                            </td>
+                            <td class="Indexdetailunit"><div>kW</div></td>
+                        </tr>
+                    }
+                }
+                @{
+                    foreach (CalIndexModel caledValue in calIndexModels)
+                    {
+                        <tr>
+                            <td class="Indexdetailname">總發電比:</td>
+                            <td class="Indexdata"><input type="text" readonly id="" class="" value="@GetDisplayValue(caledValue.TotalGeneratedPowerRatio)"></td>
+                            <td class="Indexdetailunit">%</td>
+                        </tr>
+                        <tr>
+                            <td class="Indexdetailname">即時性能比(PR) :</td>
+                            <td class="Indexdata"><input type="text" readonly id="" class="" value="@GetDisplayValue(caledValue.TotalPR_Now)"></td>
+                            <td class="Indexdetailunit">%</td>
+                        </tr>
+                        <tr>
+                            <td class="Indexdetailname">本日發電量:</td>
+                            <td class="Indexdata">
+                                <div>
+                                    <input type="text" readonly id="" class="" value="@GetDisplayValue(caledValue.DailykWh)">
+                                </div>
+                            </td>
+                            <td class="Indexdetailunit">kWh</td>
+                        </tr>
+                        <tr>
+                            <td class="Indexdetailname">等效滿載發電時數:</td>
+                            <td class="Indexdata">
+                                <div>
+                                    <input type="text" readonly id="" class="" value="@GetDisplayValue(caledValue.MaxEfficiencyHrs)">
+                                </div>
+                            </td>
+                            <td class="Indexdetailunit">hr(s)</td>
+                        </tr>
+                    }
+                }
+                @{
+                    foreach (IndexModel indexModel in indexModels)
+                    {
+                        <tr>
+                            <td class="Indexdetailname">總累積發電量:</td>
+                            <td class="Indexdata">
+                                <div>
+
+                                    <input type="text" readonly id="" class="" value="@GetDisplayValue(indexModel.PESACTotalKWH)">
+                                </div>
+                            </td>
+                            <td class="Indexdetailunit">kWh</td>
+                        </tr>
+                    }
+                }
+
+
+
+            </table>
+        </div>
+
+
+    </div>
+    <div class="Indexbackgroundbox2">
+
+        <div class="Indexinfobox2">
+            <table class="table2">
+
+                @{
+                    foreach (IndexModel indexModel in indexModels)
+                    {
+                        <tr>
+                            <td class="Indexdetailheading" id="WnT" colspan="3">
+                                <span class="Indexgeneratedpower">氣象資訊</span>
+                            </td>
+                        </tr>
+
+                        <tr class="Indextoprow">
+                            <td class="Indexdetailname">日照強度:</td>
+                            <td class="Indexdata">
+                                <div>
+                                    <input type="text" readonly id="IndexInverterTemperature" value="@GetDisplayValue(indexModel.SolarIntensity)">
+
+
+                                </div>
+                            </td>
+                            <td class="Indexdetailunit">W/m&sup2</td>
+                        </tr>
+
+                        <tr>
+                            <td class="Indexdetailname">大氣溫度:</td>
+                            <td class="Indexdata"><input type="text" readonly id="IndexTotalACPower" value="@GetDisplayValue(indexModel.AirTemperature)"></td>
+                            <td class="Indexdetailunit">&deg;C</td>
+                        </tr>
+                        <tr class="IndexShadetemperature">
+                            <td class="Indexdetailname">遮陰溫度:</td>
+                            <td class="Indexdata"><input type="text" readonly id="IndexShadetemperature" value="@GetDisplayValue(indexModel.Shadetemperature)"></td>
+                            <td class="Indexdetailunit">&deg;C</td>
+                        </tr>
+                        <tr>
+                            <td class="Indexdetailname">陣列溫度:</td>
+                            <td class="Indexdata"><input type="text" readonly id="" class="TotalDCPower" value="@GetDisplayValue(indexModel.ArrayTemperature)"></td>
+                            <td class="Indexdetailunit">&deg;C</td>
+                        </tr>
+
+                        <tr>
+                            <td class="Indexdetailname">風速:</td>
+                            <td class="Indexdata"><input type="text" readonly id="" class="TotalDCPower" value="@GetDisplayValue(indexModel.WindSpeed)"></td>
+                            <td class="Indexdetailunit">m/s</td>
+                        </tr>
+                    }
+                }
+                @{
+                    foreach (CalIndexModel calIndexModel in calIndexModels)
+                    {
+                        <tr>
+                            <td class="Indexdetailname">本日累積日照量 :</td>
+                            <td class="Indexdata"><input type="text" readonly id="" class="TotalDCPower" value="@GetDisplayValue(calIndexModel.DailySolRad)"></td>
+                            <td class="Indexdetailunit">Wh/m&sup2</td>
+                        </tr>
+                    }
+                }
+
+            </table>
+        </div>
+
+
+    </div>
+
+
+
+</div>
+@*</div>
+
+
+
+
+@section Scripts{
+
+            }*@

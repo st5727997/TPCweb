@@ -1,0 +1,33 @@
+﻿.menulist #sectorlayout {
+    font-size: 28px;
+    color: #497a34
+}
+
+
+
+
+.SLbackgroundbox {
+    margin: auto;
+    display: flex;
+    flex-direction:column;
+    vertical-align: central;
+    justify-content: center;
+    
+    left: 0.5vw;
+}
+
+.SLsubmenudetail {
+
+    overflow-y: scroll;
+    overflow-x:hidden;
+    z-index: 2;
+    height: 77vh;
+    width: 84vw;
+    position: absolute;
+    margin: auto;
+    color: black;
+    font-size: 20px;
+    
+}
+.img {
+}

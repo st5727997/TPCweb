@@ -1,0 +1,316 @@
+﻿
+
+@using mvc.Models
+@using System.Reflection
+
+@{
+    List<PowerEquipmentStatusModel> powerEquipmentModels = ViewBag.PESModels;
+    List<string> units = ViewBag.Units;
+    List<string> dataNames = ViewBag.DataNames;
+    List<List<List<string>>> pmNamesAndData = ViewBag.PMNamesAndData;
+
+    int ACPMCount = (int)powerEquipmentModels[0].ACPMCount;
+    int ACBCount = (int)powerEquipmentModels[0].ACBCount;
+    int GCBCount = (int)powerEquipmentModels[0].GCBCount;
+    int MCCBCount = (int)powerEquipmentModels[0].MCCBCount;
+    int VCBCount = (int)powerEquipmentModels[0].VCBCount;
+    int TRCount = (int)powerEquipmentModels[0].TRCount;
+    int LPCount = (int)powerEquipmentModels[0].LPCount;
+
+    int currentPage = 4;
+
+    int CalculateTotalPages(int pmCount)
+    {
+        int pages = (int)Math.Ceiling((double)pmCount / 2);
+        return pages;
+    }
+
+    int acpmTotalPages = CalculateTotalPages(ACPMCount);
+    int acbTotalPages = CalculateTotalPages(ACBCount);
+    int gcbTotalPages = CalculateTotalPages(GCBCount);
+    int mccbTotalPages = CalculateTotalPages(MCCBCount);
+    int vcbTotlaPages = CalculateTotalPages(VCBCount);
+    int trTotalPages = CalculateTotalPages(TRCount);
+    int lpTotalPages = CalculateTotalPages(LPCount);
+    int pagesUsed1 = acpmTotalPages;
+    int pagesUsed2 = pagesUsed1 + acbTotalPages;
+    int pagesUsed3 = pagesUsed2 + gcbTotalPages;
+    int pagesUsed4 = pagesUsed3 + mccbTotalPages;
+    int pagesUsed5 = pagesUsed4 + vcbTotlaPages;
+    int pagesUsed6 = pagesUsed5 + trTotalPages;
+    int pagesUsed7 = pagesUsed6 + lpTotalPages;
+
+    int thisPageToPM = 0;
+    if (currentPage <= pagesUsed1)
+    {
+        thisPageToPM = currentPage - (0 + 1);
+
+    }
+    else if (currentPage <= pagesUsed2)
+    {
+        thisPageToPM = currentPage - (pagesUsed1 + 1);
+
+    }
+    else if (currentPage <= pagesUsed3)
+    {
+        thisPageToPM = currentPage - (pagesUsed2 + 1);
+
+    }
+    else if (currentPage <= pagesUsed4)
+    {
+        thisPageToPM = currentPage - (pagesUsed3 + 1);
+
+    }
+    else if (currentPage <= pagesUsed5)
+    {
+        thisPageToPM = currentPage - (pagesUsed4 + 1);
+
+    }
+    else if (currentPage <= pagesUsed6)
+    {
+        thisPageToPM = currentPage - (pagesUsed5 + 1);
+
+    }
+
+
+
+    List<List<string>> dataKeys = new List<List<string>>();
+
+    List<string> meterNames = new List<string>();
+
+    void AddMeterNames(List<string> meterNames, int pmCount, int thisPage, string prefix, int pmIndex)
+    {
+        int totalPages = CalculateTotalPages(pmCount);
+        if (totalPages >= thisPage)
+        {
+            if (pmCount % 2 == 0)
+            {
+
+                for (int i = 1; i <= 2; i++)
+                {
+
+                    int pmNumber = (thisPage) * 2 + i;
+
+                    meterNames.Add($"{prefix}:{pmNumber}");
+
+
+                    dataKeys.Add(pmNamesAndData[pmIndex][pmNumber - 1].ToList());
+
+
+
+                }
+
+            }
+            else
+            {
+
+
+                for (int i = 1; i <= 2; i++)
+                {
+
+                    int pmNumber = (thisPage) * 2 + i;
+                    if (pmNumber <= pmCount)
+                    {
+                        meterNames.Add($"{prefix}:{pmNumber}");
+
+
+                        dataKeys.Add(pmNamesAndData[pmIndex][pmNumber - 1].ToList());
+
+
+
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                }
+
+
+            }
+        }
+
+    }
+
+
+
+
+    if (currentPage <= pagesUsed1)
+    {
+        AddMeterNames(meterNames, ACPMCount, thisPageToPM, "ACPM", 0);
+
+    }
+
+    else if (currentPage <= pagesUsed2)
+    {
+        AddMeterNames(meterNames, ACBCount, thisPageToPM, "ACB", 2);
+
+    }
+
+    else if (currentPage <= pagesUsed3)
+    {
+        AddMeterNames(meterNames, GCBCount, thisPageToPM, "GCB", 3);
+
+    }
+
+    else if (currentPage <= pagesUsed4)
+    {
+        AddMeterNames(meterNames, MCCBCount, thisPageToPM, "MCCB", 4);
+
+    }
+
+    else if (currentPage <= pagesUsed5)
+    {
+        AddMeterNames(meterNames, VCBCount, thisPageToPM, "VCB", 5);
+
+    }
+
+    else if (currentPage <= pagesUsed6)
+    {
+        AddMeterNames(meterNames, TRCount, thisPageToPM, "TR", 6);
+
+    }
+
+    else if (currentPage <= pagesUsed7)
+    {
+        AddMeterNames(meterNames, LPCount, thisPageToPM, "LP", 7);
+
+    }
+
+
+
+    //int totalPages = CalculateTotalPages(itemCount);
+    //if (totalPages >= currentPage)
+    //{
+
+    //    for (int i = 1; i <= 2; i++)
+    //    {
+    //        int pmNumber = (currentPage - 1) * 2 + i;
+    //        meterNames.Add($"{prefix}:{pmNumber}");
+    //    }
+    //}
+
+    //for(int i = 0; i<)
+    //List<string> dataKeys1 = pmNamesAndData[0][0].ToList();
+    //List<string> dataKeys2 = pmNamesAndData[0][1].ToList();
+
+
+
+
+
+
+
+
+    //List<List<string>> dataKeys = new List<List<string>>
+    //{
+    //    dataKeys1,
+    //    dataKeys2
+    //};
+
+
+    string GetDisplayValue(double? value)
+    {
+        return (value == -999 || value == null) ? "N/A" : value.Value.ToString();
+    }
+
+
+
+}
+
+@*<script>
+    setInterval(function () {
+        location.reload();
+    }, 10000);
+</script>
+
+<div class="contentdetailbox" id="app">*@
+
+
+@* @Html.Partial("_MeterListPartial")*@
+
+
+<div class="submenudetail">
+
+    @for (int i = 0; i < meterNames.Count; i++)
+    {
+        <div class="PESbackgroundbox1 pm@(i)">
+            <div class="PESinfobox1">
+                <table class="PEStable2">
+                    <thead>
+                        <tr>
+                            <th class="PESdetailheading" colspan="6">
+                                @meterNames[i] 電錶
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="loopbox">
+
+
+
+                        @for (int j = 0; j < ((dataKeys[i].Count)); j++)
+                        {
+
+                            <tr class="firstrow">
+                                <td class="PESdetailname full-width"><div><span>@dataNames[j]</span><span class="right-text">:</span></div></td>
+                                <td class="PESdata full-width">
+                                    <div>
+                                        @{
+
+                                            // Get the property name from dataKeys list
+                                            string propertyName = dataKeys[i][j];
+
+                                            // Find the corresponding model and retrieve the property value
+                                            PowerEquipmentStatusModel model = powerEquipmentModels.FirstOrDefault();
+                                            if (model != null)
+                                            {
+                                                PropertyInfo propertyInfo = typeof(PowerEquipmentStatusModel).GetProperty(propertyName);
+                                                if (propertyInfo != null)
+                                                {
+                                                    var value = propertyInfo?.GetValue(model);
+
+                                                    <input type="text" readonly id="PES" value="@GetDisplayValue((double)value)">
+                                                }
+                                                else
+                                                {
+                                                    <input type="text" readonly id="PES" value="N/A">
+                                                }
+                                            }
+
+                                        }
+                                    </div>
+                                </td>
+
+                                <td class="PESdetailunit full-width"><div>@units[j]</div></td>
+
+                            </tr>
+                        }
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+
+
+
+
+
+
+
+
+
+</div>
+@*</div>*@
+@section Scripts{
+    <script>
+
+    </script>
+}
+
+
+
+
+

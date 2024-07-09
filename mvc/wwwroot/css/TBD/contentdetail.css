@@ -1,0 +1,61 @@
+﻿
+.contentdetailbox {
+    grid-column: 2;
+    display: grid;
+    grid-template-rows: 1fr 9fr;
+    height: 87vh;
+    margin-top: 10.5vh;
+    
+}
+
+
+
+.submenulist {
+    grid-row: 1;
+    align-items: center;
+    color: #033988;
+    font-size: 40px;
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+}
+
+.convertersublist {
+    display: flex;
+    align-items: center;
+    
+    color: black;
+    grid-column: 1;
+    font-size: 23px;
+}
+
+#converternextpage {
+    grid-column: 2;
+    text-align: right;
+    vertical-align: baseline;
+    color: black;
+    margin: 6vh;
+    font-size: 20px;
+    padding: 0px;
+}
+
+.convertersubmenudetail {
+    display: flex;
+    flex-wrap:wrap;
+    
+    grid-row: 2;
+    font-size:20px;
+    height:77vh;
+    width: 84vw;
+    
+}
+
+.menulist a {
+    text-decoration: none;
+    color: #606060;
+}
+.convertersublist a {
+    color: black;
+    text-decoration: none;
+}
+
+

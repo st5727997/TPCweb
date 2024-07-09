@@ -1,0 +1,179 @@
+﻿
+@using mvc.Models
+@using System.Reflection
+
+@{
+    List<PowerEquipmentStatusModel> powerEquipmentModels = ViewBag.PESModels;
+    List<string> units = ViewBag.DCUnits;
+    List<string> dataNames = ViewBag.DCDataNames;
+    List<List<List<string>>> pmNamesAndData = ViewBag.PMNamesAndData;
+
+    int DCPMCount = (int)powerEquipmentModels[0].DCPMCount;
+
+
+    int currentPage = 10;
+
+    int CalculateTotalPages(int pmCount)
+    {
+        int pages = (int)Math.Ceiling((double)pmCount / 8);
+        return pages;
+    }
+
+
+
+    List<List<string>> dataKeys = new List<List<string>>();
+
+    List<string> meterNames = new List<string>();
+
+    void AddMeterNames(List<string> meterNames, int pmCount, int currentPage, string prefix, int pmIndex)
+    {
+        int totalPages = CalculateTotalPages(pmCount);
+        if (totalPages >= currentPage)
+        {
+            if (pmCount % 8 == 0)
+            {
+
+                for (int i = 1; i <= 8; i++)
+                {
+
+                    int pmNumber = (currentPage - 1) * 8 + i;
+
+                    meterNames.Add($"{prefix}:{pmNumber}");
+
+
+                    dataKeys.Add(pmNamesAndData[pmIndex][pmNumber - 1].ToList());
+
+
+
+                }
+
+            }
+            else
+            {
+
+
+                for (int i = 1; i <= 8; i++)
+                {
+
+                    int pmNumber = (currentPage - 1) * 8 + i;
+                    if (pmNumber <= pmCount)
+                    {
+                        meterNames.Add($"{prefix}:{pmNumber}");
+
+
+                        dataKeys.Add(pmNamesAndData[pmIndex][pmNumber - 1].ToList());
+
+
+
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                }
+
+
+            }
+        }
+
+    }
+
+
+    if (DCPMCount > 0)
+    {
+        AddMeterNames(meterNames, DCPMCount, currentPage, "DCPM", 1);
+
+    }
+
+
+
+
+    string GetDisplayValue(double? value)
+    {
+        return (value == -999 || value == null) ? "N/A" : value.Value.ToString();
+    }
+
+
+
+}
+
+@*<script>
+    setInterval(function () {
+        location.reload();
+    }, 10000);
+</script>
+
+<div class="contentdetailbox" id="app">*@
+
+
+@* @Html.Partial("_MeterListPartial")*@
+
+
+<div class="submenudetail1">
+    @for (int i = 0; i < meterNames.Count; i++)
+    {
+        <div class="PESbackgroundbox">
+            <div class="PESinfobox">
+                <table class="PEStable">
+                    <tr>
+                        <td class="PESdetailheading" colspan="3">
+                            @meterNames[i] 電表
+                        </td>
+                    </tr>
+
+                    @for (int j = 0; j < dataKeys[i].Count; j++)
+                    {
+
+                        <tr class="firstrow">
+                            <td class="PESdetailname full-width"><div><span>@dataNames[j]</span><span class="right-text">:</span></div></td>
+                            <td class="PESdata">
+                                <div>
+                                    @{
+                                        // Get the property name from dataKeys list
+                                        string propertyName = dataKeys[i][j];
+
+                                        // Find the corresponding model and retrieve the property value
+                                        PowerEquipmentStatusModel model = powerEquipmentModels.FirstOrDefault();
+                                        if (model != null)
+                                        {
+                                            PropertyInfo propertyInfo = typeof(PowerEquipmentStatusModel).GetProperty(propertyName);
+                                            if (propertyInfo != null)
+                                            {
+                                                var value = propertyInfo?.GetValue(model);
+
+                                                <input type="text" readonly id="PES" value="@GetDisplayValue((double)value)">
+                                            }
+                                            else
+                                            {
+                                                <input type="text" readonly id="PES" value="N/A">
+                                            }
+                                        }
+
+                                    }
+                                </div>
+                            </td>
+                            <td class="PESdetailunit full-width"><div>@units[j]</div></td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    }
+</div>
+@*</div>*@
+@section Scripts{
+
+}
+
+
+
+
+
+
+
+
+
+
+
+

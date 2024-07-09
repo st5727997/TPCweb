@@ -1,0 +1,39 @@
+﻿
+.OverViewTable {
+    width: 1600px;
+    /*overflow: auto;*/
+    height: 100%;
+    /*background-color: rgba(255, 255, 255, 0.7);*/
+}
+
+.TableBox {
+   margin-top:40px;
+    padding: 20px;
+    width:max-content
+}
+
+table {
+    table-layout: auto;
+    
+}
+
+td, th {
+    padding:5px;
+    text-align: center;
+    border:solid 1px;
+
+}
+
+th {
+    font-size: 20px;
+    color:#061767;
+    font-weight:bolder;
+}
+td {
+    color: #203552;
+    font-size:16px;
+}
+
+.statusbtnbox{
+    width:25px;
+}

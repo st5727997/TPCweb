@@ -1,0 +1,221 @@
+﻿@{
+    List<PowerEquipmentStatusModel> powerEquipmentModels = ViewBag.PESModels;
+    string siteName = "彰林E/S";
+
+    int? DCPMCount = 0;
+}
+<!doctype html>
+<html lang="ch">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yno">
+
+    <link rel="icon" type="image/x-icon" href="~/images/TPC_logo.svg" />
+
+    <script src="/lib/vue/vue.global.min.js"></script>
+
+
+    @*    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*@
+    @* <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.43/js/bootstrap-datetimepicker.min.js"></script>
+    *@
+    @*    <script src="https://code.jquery.com/jquery-3.7.0.js"
+    integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
+    crossorigin="anonymous"></script>*@
+    <script src="/lib/Jquery3.7.1/jquery.js"></script>
+    <link rel="stylesheet" href="/lib/bootstrap3.3.7/bootstrap3.3.7.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <script src="/lib/popper.js/umd/popper.min.js"></script>
+    <script src="/lib/tempus-dominus/js/tempus-dominus.js"></script>
+    <link rel="stylesheet" href="/lib/tempus-dominus/css/tempus-dominus.css">
+    <script src="/lib/font-awesome/js/solid.min.js"></script>
+    <script src="/lib/font-awesome/js/all.min.js"></script>
+    @*<script src="~/lib/jquery/dist/jquery.js"></script>*@
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
+    <link rel="stylesheet" href="/css/site.css">
+
+    @*<meta http-equiv="refresh" content="60">*@
+
+    <title>太陽光電發電系統</title>
+
+   
+    @*    <script>
+    let selectedMenuItem = {url:"/home/index"};
+    let contentLoaderInterval;
+
+
+    function loadContent(url) {
+
+    if (selectedMenuItem !== null) {
+
+    selectedMenuItem = url;
+
+
+    // Clear the previous interval (if any)
+    clearInterval(contentLoaderInterval);
+
+
+    $.ajax({
+    url: selectedMenuItem,
+    type: 'GET',
+    success: function (data) {
+    $('.contentbox').html(data);
+
+    // Set a new interval for loading content
+    contentLoaderInterval = setInterval(function () {
+    loadContent(selectedMenuItem);
+    }, 10000);
+    },
+    error: function () {
+    alert('Failed to load content.');
+    }
+    });
+
+
+    }
+    else{return;}
+
+
+
+
+
+    }
+    </script>
+    *@
+
+
+
+</head>
+
+<!-- PAGE START -->
+<body class="body">
+
+
+    <!-- FRAME START -->
+    <div class="menubox" id="layoutapp">
+
+        <div class="region">@siteName</div>
+        <ul class="menulist">
+
+            <li><a href="/home/Index/Index" id="index">案場總覽資訊</a>                                                 </li>
+            <li><a href="/home/ACPM/AC_MainPage" id="ACPM">交流電錶資訊</a>    </li>
+            <li><a href="/home/Converter" id="converter">變流器資訊</a>                                                 </li>
+            @if (DCPMCount != 0)
+            {
+                <li>
+                    <a href="/home/DCPM/DC_MainPage" id="DCPM">直流電錶資訊</a>
+
+                </li>
+            }
+          
+            <li><a href="/home/WeatherAndTemp/Extras" id="WAndT">氣象、溫度及<br />廠內用電資料</a>                          </li>
+            <li><a href="/home/singlelinediagram" id="singlelinediagram">電力單線圖</a>                                 </li>
+            <li><a href="/home/reportquery" id="reportquery">歷史資訊</a>                                               </li>
+            <li><a href="/home/chartquery" id="chartquery">趨勢圖查詢</a>                                               </li>
+            <li><a href="/home/attensionneeded" id="attensionneeded">即時警報</a>                                       </li>
+            <li><a href="/home/AlarmHistory" id="AlarmHistory">歷史警報</a>                                             </li>
+            <li><a href="/home/sectorlayout" id="sectorlayout">案場配置</a>                                             </li>
+        </ul>
+
+    </div>
+    <!-- FRAME END -->
+    <!-- CONTENT START -->
+    <div class="contentbox">
+        <p class="Topic">太陽光電發電系統</p>
+        <main role="main" class="pb-3" id="main">
+            @RenderBody()
+
+        </main>
+
+        @RenderSection("Scripts", required: false)
+
+
+
+    </div>
+    <!-- CONTENT END -->
+
+
+
+
+</body>
+<!-- PAGE END -->
+
+
+
+
+
+<script>
+
+
+
+
+
+
+
+
+
+
+
+
+    //const layoutapp = Vue.createApp({
+    //    methods: {
+
+    //        Toindex(style) {
+    //            window.location.href = '/home/index';
+
+    //        },
+    //        ToConverter(style) {
+    //            window.location.href = '/home/converter';
+
+    //        },
+    //        Topowerequipmentstatus(style) {
+    //            window.location.href = '/home/PowerEquipmentStatus?id=powerequipmentstatus';
+
+    //        },
+    //        Toreportquery(style) {
+    //            window.location.href = '/home/reportquery';
+
+    //        },
+    //        Tosinglelinediagram(style) {
+    //            window.location.href = '/home/SingleLinediagram';
+
+    //        },
+    //        Tochartquery(style) {
+    //            window.location.href = '/home/chartquery';
+
+    //        },
+    //        Toattensionneeded(style) {
+    //            window.location.href = '/home/attensionneeded';
+
+    //        },
+    //        ToAlarmHistory(style) {
+    //            window.location.href = '/home/AlarmHistory';
+
+    //        },
+    //        Tosectorlayout(style) {
+    //            window.location.href = '/home/sectorlayout';
+
+    //        },
+    //        getstyle(style) {
+    //            return {
+
+    //            };
+
+    //        },
+    //    },
+    //        data() {
+    //            return {
+    //                oldstyle: null
+    //            };
+    //    }
+
+    //}).mount('#layoutapp');
+
+</script>
+</html>

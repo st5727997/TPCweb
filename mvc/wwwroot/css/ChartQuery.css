@@ -1,0 +1,74 @@
+﻿.menulist #chartquery {
+    font-size: 28px;
+    color: #497a34
+}
+
+
+.CQChartbox {
+    margin-top: 2vh;
+    position: relative;
+    z-index: 2;
+    height:700px;
+}
+
+canvas {
+    /*height: 70vh !important; */
+}
+
+.CQfilterbar {
+    display: flex;
+}
+
+    .CQfilterbar > * {
+        margin-inline: 1vw;
+    }
+
+.CQdatefrom {
+    display: flex;
+    flex-wrap: nowrap;
+    height: 3.5vh;
+}
+
+
+    .CQdatefrom > * {
+        margin-inline: .2vw;
+    }
+
+.CQdateto {
+    display: flex;
+    flex-wrap: nowrap;
+    height: 3.5vh;
+}
+
+    .CQdateto > * {
+        margin-inline: .2vw;
+    }
+
+
+
+.CQbackgroundbox {
+    opacity: 0.7;
+    background-color: white;
+    top: 19%;
+    left: 14%;
+    width: 83.5vw;
+    height: 77vh;
+    position: absolute;
+    z-index: 1
+}
+
+button {
+    border: solid 2px #606060
+}
+
+#chartbox {
+/*    width: 1600px;
+    height: 650px;
+    display:flex;
+    align-items:center*/
+}
+
+#chartContainer{
+    margin-inline:1%;
+    margin-block:1%;
+}

@@ -1,0 +1,151 @@
+﻿
+
+.Indexbackgroundbox1 {
+  
+    background-color: rgba(224, 244, 215, 0.8);
+    border: 2px solid;
+    border-radius: 10px;
+    width: 35vw;
+    height: 53vh;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 35%;
+    top: 48%;
+}
+
+.Indexbackgroundbox2 {
+  
+    background-color: rgba(224, 244, 215, 0.8);
+    border: 2px solid;
+    border-radius: 10px;
+    width: 35vw;
+    height: 53vh;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 75%;
+    top: 48%;
+}
+
+
+
+.Indexinfobox1 {
+    white-space: nowrap;
+    width: 35vw;
+    height: 100%;
+   /* position: absolute;*/
+    /*transform: translate(-50%, -50%);*/
+    /*left: 35%;
+    top: 43.5%;*/
+    font-size: 25px;
+}
+
+.table1 {
+    margin-inline: 5%;
+   margin-bottom:5%;
+   margin-top:3%;
+    height:90%;
+    width:90%
+}
+
+.Indexinfobox2 {
+    
+    white-space: nowrap;
+    width: 35vw;
+    height: 100%;
+    /*position: absolute;
+    transform: translate(-50%, -50%);
+    left: 75%;
+    top: 45%;*/
+    font-size: 25px;
+}
+
+.table2 {
+    margin-inline: 5%;
+    margin-bottom: 5%;
+    margin-top: 3%;
+    height: 90%;
+    width: 90%
+}
+
+
+
+
+
+.menulist #index {
+    font-size: 28px;
+    color: #497a34
+}
+
+
+
+
+
+.Indexdetailheading {
+    vertical-align: bottom;
+    border-bottom: 2px dashed black;
+    height:50.5px;
+  
+}
+
+.Indexdetailname {
+    text-align: right;
+    /*padding-left: 1vw;*/
+    padding-right: .5vw;
+    
+}
+
+.Indexdata input {
+    color: green;
+}
+
+
+.Indexdetailunit {
+    text-align: left;
+  
+    padding-left: .5vw;
+}
+
+.Indexgeneratedpower {
+    font-size: 30px;
+    color: #061767;
+}
+
+.Indexinvertercapacity {
+    font-size: 33px;
+    color: #497a34;
+}
+
+td {
+    text-align-last: justify;
+    
+}
+
+   #WnT{
+        text-align-last:left;
+        letter-spacing:15px;
+   }
+
+    td.Indexdata {
+        text-align-last: center;
+        
+
+    }
+
+
+
+/*.IndexAccumulatedCO2reduction {
+    margin-top: .5vh;
+}*/
+
+/*.IndexShadetemperature {
+    margin-bottom: .5vh;
+}*/
+
+tr {
+   
+}
+
+
+.Indextoprow div{
+    padding-top:10px;
+}

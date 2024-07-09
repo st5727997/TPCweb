@@ -1,0 +1,262 @@
+﻿@using mvc.Models
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<PowerEquipmentStatusModel> powerEquipmentModels = ViewBag.PESModels;
+
+   
+    int DCPMCount = (int)powerEquipmentModels[0].DCPMCount;
+ 
+
+    int[] PESCounts =
+    {
+       
+        DCPMCount,
+    
+    };
+
+    string[] PESNames =
+            {
+
+"DCPM",
+
+    };
+
+    List<string> pageTitles = new List<string>();
+    {
+        for (int i = 0; i < PESCounts.Length; i++)
+        {
+            //  T/F check
+            if (PESCounts[i] != 0)
+            {
+                string PESName = PESNames[i];
+                //even number
+                if(PESCounts[i] % 2==0)
+                {
+                    //DCPM
+                    if (i == 0)
+                    {
+                        //
+                        if(PESCounts[i]%8 == 0)
+                        {
+                            for (int j = 1; j <= (PESCounts[i] + 8) / 8; j++)
+                            {
+
+                                int startValue = j * 8 - 7;
+                                pageTitles.Add($"{PESName}:{startValue}-{startValue + 7}");
+                                startValue += 8;
+                            }
+                        }
+                        else
+                        {
+                            for (int j = 1; j <= (PESCounts[i]) / 8; j++)
+                            {
+
+                                int startValue = j * 8 - 7;
+                                pageTitles.Add($"{PESName}:{startValue}-{startValue + 7}");
+                                startValue += 8;
+                            }
+                            if ((PESCounts[i] - 1) % 8 == 0)
+                            {
+                                pageTitles.Add($"{PESName}:{PESCounts[i]}");
+                            }
+                            else
+                            {
+                                pageTitles.Add($"{PESName}:{(PESCounts[i] / 8) * 8}-{PESCounts[i]}");
+                            }
+
+                        }
+
+                    }
+                    else
+                    {
+                        for (int j = 1; j <= (PESCounts[i] + 1) / 2; j++)
+                        {
+
+                            int startValue = j * 2 - 1;
+                            pageTitles.Add($"{PESName}:{startValue}+{startValue + 1}");
+                            startValue += 2;
+                        }
+                    }
+
+                }
+                // odd number
+                else
+                {
+                    //DCPM
+                    if (i == 0)
+                    {
+                        //
+                        if (PESCounts[i] % 8 == 0)
+                        {
+                            for (int j = 1; j <= (PESCounts[i] + 8) / 8; j++)
+                            {
+
+                                int startValue = j * 8 - 7;
+                                pageTitles.Add($"{PESName}:{startValue}-{startValue + 7}");
+                                startValue += 8;
+                            }
+                        }
+                        else
+                        {
+                            // less than 8 = 1 page
+                            if(PESCounts[i]/8<1)
+                            {
+                                pageTitles.Add($"{PESName}:1-{PESCounts[i]}");
+                            }
+                            else
+                            {
+                                for (int j = 1; j <= (PESCounts[i]) / 8; j++)
+                                {
+
+                                    int startValue = j * 8 - 7;
+                                    pageTitles.Add($"{PESName}:{startValue}-{startValue + 7}");
+                                    startValue += 8;
+                                }
+                                if ((PESCounts[i] - 1) % 8 == 0)
+                                {
+                                    pageTitles.Add($"{PESName}:{PESCounts[i]}");
+                                }
+                                else
+                                {
+
+                                    pageTitles.Add($"{PESName}:{(PESCounts[i] / 8) * 8}-{PESCounts[i]}");
+                                }
+                            }
+                            
+
+                        }
+                    }
+                    else
+                    {
+                        for (int j = 1; j <= (PESCounts[i]) / 2; j++)
+                        {
+
+                            int startValue = j * 2 - 1;
+                            pageTitles.Add($"{PESName}:{startValue}+{startValue + 1}");
+                            startValue += 2;
+                        }
+                        pageTitles.Add($"{PESName}:{PESCounts[i]}");
+                    }
+                    
+                }
+
+                
+            }
+        }
+    };
+
+
+
+}
+
+<script>
+    function reloadAtMidnight() {
+        const now = new Date();
+        const midnight = new Date(now);
+        midnight.setHours(24, 0, 0, 0); // Set the time to midnight (00:00:00:000)
+
+        const timeUntilMidnight = midnight - now;
+
+        setTimeout(function () {
+            location.reload();
+            reloadAtMidnight(); // Schedule the next reload for the next day
+        }, timeUntilMidnight);
+    }
+
+    // Call the function to start the reloading process
+    reloadAtMidnight();
+</script>
+<link rel="stylesheet" href="/css/PowerEquipementStatus_DC.css">
+<link rel="stylesheet" href="/css/DCPM.css">
+
+
+<div class="contentdetailbox" id="app">
+
+
+    <div class="submenulist">
+        <div class="attensionneededsublist">
+            <span id="PMdata" data-pages-count="@pageTitles.Count">直流電錶資料</span>
+
+        </div>
+        <div class="Meterlistbox">
+            @{
+                if(pageTitles.Count != 0)
+                {
+                    <select class="Meterlist" onchange="handleMeterChange(this.value)">
+                        @for (int i = 1; i <= pageTitles.Count; i++)
+                        {
+                            <option value="P@(i)">@pageTitles[i-1]</option>
+                        }
+
+
+                    </select>
+                }
+            }
+           
+            <script>
+                var pagesCountElement = document.getElementById("PMdata");
+                var PagesCount = pagesCountElement.getAttribute("data-pages-count");
+                var actionUrls = {};
+                console.log(PagesCount)
+                for (var i = 1; i <= PagesCount; i++) {
+                    actionUrls['P' + i] = 'DCPM/_PowerEquipmentStatus' + i;
+
+                }
+
+                var selectedPage = 'DCPM/_PowerEquipmentStatus1'; // Default selected page
+                var contentLoaderInterval = null;
+
+                function handleMeterChange(value) {
+                    selectedPage = actionUrls[value];
+                    refreshContent();
+                }
+
+                function loadPESDetailContent() {
+                    $.ajax({
+                        url: '@Url.Action("LoadPESDetail", "Home")',
+                        type: 'GET',
+                        data: { PESPath: selectedPage },
+                        dataType: 'html',
+                        success: function (data) {
+                            // Replace the content of submenudetail div with fetched data
+                            $('#PESDetailBox').html(data);
+                        },
+                        error: function () {
+                            console.error('Error fetching submenudetail content.');
+                        }
+                    });
+                }
+
+                function refreshContent() {
+                    // Clear the previous interval (if any)
+                    clearInterval(contentLoaderInterval);
+
+                    // Load content immediately
+                    loadPESDetailContent();
+
+                    // Set a new interval for loading content
+                    contentLoaderInterval = setInterval(function () {
+                        loadPESDetailContent();
+                    }, 10000);
+                }
+
+                // Initial call to load content for the default selected page
+                refreshContent();
+            </script>
+        </div>
+
+    </div>
+
+    <div id="PESDetailBox">
+    </div>
+
+
+
+
+</div>
+
+@section Scripts{
+
+
+    }

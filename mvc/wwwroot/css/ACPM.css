@@ -1,0 +1,160 @@
+﻿
+
+.menulist #ACPM {
+    font-size: 28px;
+    color: #497a34
+}
+
+
+.submenudetail {
+    display: flex;
+    flex-direction: row;
+    gap: 1%
+}
+
+
+
+.PESbackgroundbox3, .PESbackgroundbox1 {
+    background-color: rgba(224, 244, 215, 0.8);
+    /* background-color: red;*/
+    border: 2px solid;
+    border-radius: 10px;
+    width: 50%;
+    height: 101%;
+}
+
+select {
+    width: 9vw;
+}
+
+.Meterlistbox {
+    text-align: right;
+    margin-right: 2vw;
+}
+
+.Meterlist {
+    padding-inline: 5px;
+    font-size: 22px;
+}
+
+tr {
+}
+
+
+
+
+
+/*.PESinfobox1 {
+    display:flex;
+    
+    
+}*/
+.PEStable1, .PEStable2 {
+    margin-inline: 20px
+}
+
+
+.PESinfobox3, .PESinfobox1 {
+    white-space: nowrap;
+}
+
+    .PESinfobox3 td:nth-child(3), .PESinfobox1 td:nth-child(3) {
+        padding-right: 0.5vw;
+    }
+
+    .PESinfobox3 td:nth-child(4), .PESinfobox1 td:nth-child(4) {
+        padding-left: 0.5vw;
+    }
+
+.spacerrow {
+    height: 0.5vh;
+}
+
+
+
+.PESdetailheading {
+    vertical-align: bottom;
+    border-bottom: 2px dashed black;
+    font-size: 30px;
+    color: #061767;
+}
+
+#PESSunlightIntensity {
+    margin-top: .5vh;
+}
+
+.PESdetailname {
+}
+
+td.PESdata div {
+    width: 130px;
+}
+
+td.PESdata input {
+    height: 27px;
+    width: 100%;
+    text-align: center;
+}
+
+.PESinfobox1 td.PESdetailname {
+    padding-right: .5vw;
+    padding-left:5px;
+    text-align-last: justify;
+    width: 190px;
+}
+
+.PESinfobox3 td.PESdetailname {
+    padding-right: .5vw;
+    text-align-last: justify;
+}
+
+
+td.PESdetailunit {
+    display: flex;
+    width: 60px;
+    padding-left: .5vw;
+    align-items: center;
+    font-size: 15px;
+    padding-bottom: 5px
+}
+
+
+tr {
+    height: 40px;
+    /*   margin-top:7px*/
+}
+
+.fixeddata {
+    color: #497a34
+}
+
+.loopbox {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    height: 660px;
+    width: 750px;
+}
+
+.full-width {
+}
+
+.firstrow {
+    flex-basis: 6.5%;
+    display: flex;
+    align-items: end;
+}
+
+.PESdetailname div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.PESdetailname.full-width span:first-child {
+    width: 180px;
+}
+
+.DCPM {
+    display: flex;
+}

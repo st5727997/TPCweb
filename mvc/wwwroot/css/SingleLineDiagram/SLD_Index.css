@@ -1,0 +1,40 @@
+﻿
+.active {
+    background-color: black;
+    color: #00FF00;
+    padding-inline: 5px;
+}
+
+.malfunction {
+    background-color: black;
+    color: #FF0000;
+    padding-inline: 5px;
+}
+
+.onhold {
+    background-color: black;
+    color: #FFFF00;
+    padding-inline: 5px;
+}
+
+
+
+
+.indexbox {
+    top:0;
+    right:0;
+    position: absolute;
+    display: inline-block;
+    margin-block: 15px;
+    margin-inline: 20px;
+}
+
+.index {
+    display: flex;
+    vertical-align: central;
+    color: #033988
+}
+
+.btnimg {
+    width: 25px;
+}

@@ -1,0 +1,325 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using mvc.Models;
+@using System.Reflection
+
+@{
+
+    List<ConverterInfoModel> converterInfoModels = ViewBag.ConverterInfoModels as List<ConverterInfoModel>;
+    List<PowerEquipmentStatusModel> powerEquipmentModels = ViewBag.PESModels;
+    List<WeatherTempModel> weatherTempModels = ViewBag.WeatherTempModels;
+
+    Dictionary<string, double?> weatherTempKeyValues = weatherTempModels[0].WeatherTempKeyValues;
+    int weatherUnitCount = weatherTempModels[0].WeatherUnitCount;
+    int LPUnitCount = (int)powerEquipmentModels[0].LPCount;
+    int PVBoxUnitCount = weatherTempModels[0].PVBoxUnitCount;
+    int PVBoxCountPerUnit = weatherTempModels[0].PVBoxCountPerUnit;
+
+
+
+    string[] weatherRowNames =
+            {
+        "日照強度<br />(W/m\u00B2)",
+        "氣溫<br />(°C)",
+        "遮陰溫度<br />(°C)",
+        "模組溫度<br />(°C)",
+        "變壓器溫度<br />(°C)"
+
+    };
+    string[] powerRowNames =
+            {
+        "廠用電壓(V)",
+        "廠用電流(A)",
+        "即時廠用電功率(kW)",
+        "累計廠用電量(mWh)"
+    };
+
+    List<string> PVBSectorNames = Enumerable.Range('A', 'Z' - 'A' + 1)
+                                       .Select(c => $"PVB-{(char)c}區")
+                                       .ToList();
+
+    List<string> PVBoxRowNames = new List<string>();
+    {
+        for (int i = 0; i < PVBoxCountPerUnit; i++)
+        {
+
+
+            string PVBoxRowName = PVBSectorNames[i];
+            PVBoxRowNames.Add(PVBoxRowName);
+        }
+    }
+
+    List<List<string?>> weatherdataKeys = weatherTempModels[0].WeatherDataKeys;
+
+
+    List<List<string>> LPDataKeys = weatherTempModels[0].LPDataKeys;
+
+
+    List<List<string>> PVBDataKeys = weatherTempModels[0].PVBoxDataKeys;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    string GetDisplayValue(double? value)
+    {
+        if (value == -999 || value == null)
+        {
+            return "N/A";
+        }
+        else
+        {
+            // Limiting the displayed decimals to 2 digits after the decimal point
+            return Math.Round(value ?? 0, 2).ToString("#,0.##");
+            // return value.ToString();
+        }
+        // return value == -999 ? "N/A" : value.ToString();
+    }
+
+
+
+}
+
+
+
+<link rel="stylesheet" href="/css/WeatherAndTemp_Extra.css">
+
+
+<div class="submenudetail">
+    <div class="CIbackgroundbox1">
+        <div class="weatherbox">
+
+            <div class="CIbox">
+                <div class="CIheading">
+                    <div class="CIconverterstatusbar1">
+                        <span class="CIconvertername" id="converter">日照、環境溫度、變壓器溫度</span>
+
+                    </div>
+
+
+                </div>
+                @if (weatherUnitCount != 0)
+                {
+                    <div class="TableBox">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    @for (int i = 0; i < weatherRowNames.Length; i++)
+                                    {
+                                        <th>@Html.Raw(weatherRowNames[i])</th>
+                                    }
+
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < weatherUnitCount; i++)
+                                {
+                                    <tr>
+                                        <th>第@(i + 1)組</th>
+                                        @for (int j = 0; j < weatherRowNames.Length; j++)
+                                        {
+                                            <td>
+                                                @{
+                                                    string key = weatherdataKeys[i][j];
+                                                    if (weatherTempKeyValues.ContainsKey(key))
+                                                    {
+                                                        var value = weatherTempKeyValues[key];
+                                                        <span>@GetDisplayValue((double)value)</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>N/A</span>
+                                                    }
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                }
+                else
+                {
+                    <div class="TableBox">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>無氣象溫度資料</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                }
+            </div>
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+        <div class="CIbox">
+            <div class="CIheading">
+                <div class="CIconverterstatusbar1">
+                    <span class="CIconvertername" id="converter">PVBOX溫度</span>
+                </div>
+            </div>
+            @if (PVBoxUnitCount != 0)
+            {
+                <div class="TableBox">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                @for (int i = 0; i < PVBoxRowNames.Count; i++)
+                                {
+                                    <th>@PVBoxRowNames[i]<br />室內溫度(°C)</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < PVBoxUnitCount; i++)
+                            {
+                                <tr>
+                                    <th>第@(i + 1)組</th>
+
+                                    @for (int j = 0; j < PVBoxRowNames.Count; j++)
+                                    {
+                                        <td>
+                                            @{
+                                                string key = PVBDataKeys[i][j];
+                                                if (weatherTempKeyValues.ContainsKey(key))
+                                                {
+                                                    var value = weatherTempKeyValues[key];
+                                                    <span>@GetDisplayValue((double)value)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>N/A</span>
+                                                }
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="TableBox">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>無PVB溫度資料</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            }
+        </div>
+
+
+
+
+
+
+        <div class="CIbox">
+            <div class="CIheading">
+                <div class="CIconverterstatusbar1">
+                    <span class="CIconvertername" id="converter">廠內用電</span>
+
+                </div>
+
+
+            </div>
+            @if (LPUnitCount != 0)
+            {
+                <div class="TableBox">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                @for (int i = 0; i < powerRowNames.Length; i++)
+                                {
+                                    <th>@powerRowNames[i]</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < LPUnitCount; i++)
+                            {
+                                <tr>
+
+                                    <th>第@(i + 1)組</th>
+                                    @for (int j = 0; j < powerRowNames.Length; j++)
+                                    {
+                                        <td>
+                                            @{
+                                                PropertyInfo propertyInfo = typeof(PowerEquipmentStatusModel).GetProperty(LPDataKeys[i][j]);
+                                                if (propertyInfo != null)
+                                                {
+                                                    var value = propertyInfo?.GetValue(powerEquipmentModels.FirstOrDefault());
+
+                                                    <span>@GetDisplayValue((double)value)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>N/A</span>
+                                                }
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+            }
+            else
+            {
+                <div class="TableBox">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>無廠內用電資料</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            }
+        </div>
+
+
+
+
+
+    </div>
+</div>
+
+
+
+

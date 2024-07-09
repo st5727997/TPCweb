@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "vue@3.3.0",
+      "destination": "wwwroot/lib/vue",
+      "files": [
+        "vue.cjs.js",
+        "vue.global.min.js"
+      ]
+    },
+    {
+      "library": "popper.js@2.11.8",
+      "destination": "wwwroot/lib/popper.js/"
+    },
+    {
+      "library": "tempus-dominus@6.7.11",
+      "destination": "wwwroot/lib/tempus-dominus/"
+    },
+    {
+      "library": "font-awesome@6.4.0",
+      "destination": "wwwroot/lib/font-awesome/",
+      "files": [
+        "css/all.min.css",
+        "js/all.min.js",
+        "js/solid.min.js"
+      ]
+    },
+    {
+      "library": "d3.chart@0.3.0",
+      "destination": "wwwroot/lib/d3.chart/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "jquery@3.7.1",
+      "destination": "wwwroot/lib/Jquery3.7.1/"
+    }
+  ]
+}

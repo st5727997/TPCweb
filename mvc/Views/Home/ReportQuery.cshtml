@@ -1,0 +1,421 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<ConverterInfoModel>? converterInfoModels = ViewBag.ConverterInfoModels as List<ConverterInfoModel>;
+    int invCount = (int)converterInfoModels[0]?.invCount;                              //變流器數量
+    Dictionary<string, string> replacementDictionary = converterInfoModels[0].replacementDictionary;
+}
+
+
+
+
+
+<link rel="stylesheet" href="/css/ReportQuery.css">
+
+<div class="contentdetailbox" id="app">
+
+    <div class="submenulist">
+        <div class="reportquerylist">
+            <span id="">報表查詢</span>
+
+        </div>
+
+    </div>
+    <div class="submenudetail">
+        <div class="RQdetailbox">
+
+
+
+            <div class="RQfilterbar">
+                <form id="filterForm">
+                    <div class="RQfilterdate">
+
+
+
+
+                        <div class="RQdatefrom">
+
+                            <span>開始時間:</span>
+                            <div class="datebox">
+                                <div class="input-group"
+                                     id="datetimepicker1"
+                                     data-td-target-input="nearest"
+                                     data-td-target-toggle="nearest">
+                                    <input id="datetimepicker1Input"
+                                           type="text"
+                                           class="form-control"
+                                           data-td-target="#datetimepicker1"
+                                           required />
+                                    <span class="input-group-text"
+                                          data-td-target="#datetimepicker1"
+                                          data-td-toggle="datetimepicker">
+                                        <span class="fa-solid fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="RQdateto">
+                            <span>結束時間:</span>
+
+                            <div class="datebox">
+                                <div class="input-group"
+                                     id="datetimepicker2"
+                                     data-td-target-input="nearest"
+                                     data-td-target-toggle="nearest">
+                                    <input id="datetimepicker2Input"
+                                           type="text"
+                                           class="form-control"
+                                           data-td-target="#datetimepicker1"
+                                           required />
+                                    <span class="input-group-text"
+                                          data-td-target="#datetimepicker1"
+                                          data-td-toggle="datetimepicker">
+                                        <span class="fa-solid fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+
+
+                    <div class="ckbox" style="width:200px;">
+                        @for (int i = 1; i <= invCount; i++)
+                        {
+                            string formattedNumber = i.ToString("D2");
+                            <label>
+                                <input type="checkbox" value="Inv@(formattedNumber)" class="RQlistbox-checkbox inv-checkbox"> Inv@(formattedNumber)
+                            </label>
+
+                        }
+
+                        <label>
+                            <input type="checkbox" value="AC" class="RQlistbox-checkbox"> 電錶
+                        </label>
+
+                        <label>
+                            <input type="checkbox" value="OV" class="RQlistbox-checkbox"> 總覽
+                        </label>
+
+                    </div>
+
+
+
+
+                    <div class="submitbtn">
+                        <button class="RQquery" id="queryBtn" type="submit">
+                            查詢
+                        </button>
+                    </div>
+
+
+
+                </form>
+            </div>
+
+
+
+
+            <div class="RQbackgroundbox"></div>
+            <div class="RQtablebox">
+                <table class="RQtable">
+                    <thead>
+                        <tr class="header-row">
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- The table body will contain the data rows -->
+                    </tbody>
+
+
+                </table>
+
+
+
+            </div>
+
+
+            <script type="text/javascript">
+
+
+
+                $(document).ready(function () {
+
+                    // Define your replacement dictionary
+                    // Convert C# replacementDictionary to JavaScript object
+                    var replacementDictionary = JSON.parse('@Html.Raw(Json.Serialize(replacementDictionary))');
+                    console.log(replacementDictionary);
+                    
+                    // Attach click event to the "查詢" button
+                    $("#filterForm").on("submit", function (event) {
+                        // Prevent the default form submission behavior
+                        event.preventDefault();
+                        // Get selected datetime values
+                        var startDate = $("#datetimepicker1Input").val();
+                        var endDate = $("#datetimepicker2Input").val();
+
+
+
+                        // Get selected checkbox values
+                        var selectedCheckboxes = [];
+                        $(".RQlistbox-checkbox:checked").each(function () {
+                            selectedCheckboxes.push($(this).val());
+                        });
+
+                        // Check if the datetime picker inputs are empty
+                        if (!startDate || !endDate || selectedCheckboxes.length === 0) {
+                            // Display an alert indicating that the inputs are required
+                            alert("請選擇正確日期時間以及顯示項目");
+                            return;
+                        }
+
+                        // Calculate the difference in milliseconds between the two dates
+                        const differenceInMilliseconds = Math.abs(endDate - startDate);
+
+                        // Number of milliseconds in 31 days
+                        const millisecondsIn31Days = 31 * 24 * 60 * 60 * 1000;
+
+                        // Check if the difference is within 31 days
+                        if (differenceInMilliseconds > millisecondsIn31Days) {
+                            // Display an alert indicating that the dates are more than 31 days apart
+                            alert("日期時間範圍必須在31天內");
+                            return;
+                        }
+
+
+                        // Send AJAX request
+                        $.ajax({
+                            type: "POST", // or "GET" depending on your controller action
+                            url: "/Home/TableRefresh", // Replace with the actual controller and action name
+                            data: {
+                                startDate: startDate,
+                                endDate: endDate,
+                                selectedCheckboxes: selectedCheckboxes
+                            },
+
+
+                            success: function (data) {
+
+                                //Clear previous table rows
+                                var tableBody = $(".RQtable tbody");
+                                tableBody.empty();
+
+                                // Preprocess time values to remove 'T' and sort data by "name" values
+                                data.forEach(function (item) {
+                                    item.time = item.time.replace('T', ' ');
+                                });
+                                // Sort data by "name" values
+                                data.sort((a, b) => a.name.localeCompare(b.name));
+
+                                // Create an object to hold data for each column
+                                var columnData = {};
+
+                                // Populate the object with data for each column
+                                data.forEach(function (item) {
+                                    if (!columnData[item.name]) {
+                                        columnData[item.name] = {
+                                            times: [],
+                                            values: []
+                                        };
+                                    }
+                                    columnData[item.name].times.push(item.time);
+                                    columnData[item.name].values.push(item.value);
+                                });
+
+                                // Get the table
+                                var table = $(".RQtable");
+
+                                // Create header row with unique "name" values
+                                var headerRow = "<tr><th><div>時間</div></th>";
+                                var uniqueNames = Object.keys(columnData);
+
+                                uniqueNames.forEach(function (name) {
+                                    // Check if the cell name exists in the replacement dictionary
+                                    var headerName = name;
+                                    if (replacementDictionary.hasOwnProperty(name)) {
+                                        headerName = replacementDictionary[name];
+                                    }
+
+                                    headerRow += "<th><div>" + headerName + "</div></th>";
+                                });
+
+                                headerRow += "</tr>";
+
+                                // Add header row to the table
+                                table.find("thead").html(headerRow);
+
+
+
+                                // Get the table body
+                                var tableBody = $(".RQtable tbody");
+                                // Create rows and populate the table
+                                if (data.length > 0) {
+                                    var uniqueTimes = Array.from(new Set(data.map(item => item.time))); // Get unique time values
+                                    uniqueTimes.forEach(function (timeValue) {
+                                        var row = "<tr>";
+                                        row += "<td><div class='time'>" + timeValue + "</div></td>";
+
+                                        uniqueNames.forEach(function (name) {
+                                            var matchingItem = data.find(item => item.time === timeValue && item.name === name);
+                                            if (matchingItem) {
+
+                                                var cellValue = matchingItem.value;
+                                                row += "<td><div class='value'>" + cellValue + "</div></td>";
+                                            } else {
+                                                row += "<td><div class='value'>-</div></td>"; // No matching data, display "-"
+                                            }
+                                        });
+
+                                        row += "</tr>";
+                                        tableBody.append(row);
+                                    });
+                                } else {
+                                    // If data is empty, show a message in the table
+                                    tableBody.append("<tr><td colspan='" + (uniqueNames.length + 1) + "'>No data available within the time line</td></tr>");
+                                }
+                            },
+    
+
+
+
+
+
+                            error: function (xhr, textStatus, errorThrown) {
+                                alert("Error fetching data from the server.");
+                            }
+                        });
+                    });
+                });
+
+
+                $(".RQlistbox-checkbox").change(function () {
+                    // Uncheck all checkboxes except the current one
+                    $(".RQlistbox-checkbox").not(this).prop("checked", false);
+
+                    //var selectedOption = $(this).val();
+
+                    //// Hide all dropdown boxes initially
+                    //$("#ac-listbox").hide();
+                    //$("#ov-listbox").hide();
+                    //$("#inv-listbox").hide();
+
+                    //switch (selectedOption) {
+                    //    case "AC":
+                    //        $("#ac-listbox").show();
+
+                    //        break;
+                    //    case "OV":
+                    //        $("#ov-listbox").show();
+
+                    //        break;
+                    //    case "Inv01":
+                    //    case "Inv02":
+                    //    case "Inv03":
+                    //    case "Inv04":
+                    //    case "Inv05":
+                    //    case "Inv06":
+                    //    case "Inv07":
+                    //        $("#inv-listbox").show();
+
+                    //        break;
+                    //    default:
+                    //        break;
+                    //}
+                });
+
+
+            </script>
+
+
+            <script>
+                window.datetimepicker1 = new tempusDominus.TempusDominus(
+                    document.getElementById('datetimepicker1'),
+
+                    {
+                        display: {
+                            sideBySide: true,
+                            viewMode: 'years',
+                            toolbarPlacement: 'top',
+                            buttons: {
+                                today: 'true',
+                                clear: 'true'
+                            },
+
+
+
+
+                        },
+                        localization: {
+                            hourCycle: 'h24',
+                            format: 'yyyy-MM-dd HH:mm:00',
+                        },
+
+                    }
+                );
+                window.datetimepicker1 = new tempusDominus.TempusDominus(
+                    document.getElementById('datetimepicker2'),
+                    {
+                        display: {
+                            sideBySide: true,
+                            viewMode: 'years',
+                            toolbarPlacement: 'top',
+                            buttons: {
+                                today: 'true',
+                                clear: 'true'
+                            },
+
+
+
+
+                        },
+                        localization: {
+                            hourCycle: 'h24',
+                            format: 'yyyy-MM-dd HH:mm:00',
+                        },
+                    }
+                );
+
+
+
+
+            </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+</div>
+
+@section Scripts{
+
+}

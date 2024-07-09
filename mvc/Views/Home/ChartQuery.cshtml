@@ -1,0 +1,676 @@
+﻿@*@model List<ChartModels>*@
+
+
+@{
+    List<ConverterInfoModel>? converterInfoModels = ViewBag.ConverterInfoModels as List<ConverterInfoModel>;
+
+
+    ViewData["Title"] = "Chart Query";
+    List<ChartModels> chartModels = ViewBag.ChartModels;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int dailyHours = 24;
+
+    List<string> chartList = new List<string>
+    {
+"毛發電功率",
+    "總發電比",
+    "即時性能比(PR)",
+    "本日累積發電量",
+    "等效滿載發電時數",
+"總累積發電量",
+"日照強度",
+"大氣溫度",
+"遮陰溫度",
+"陣列溫度",
+    "風速",
+"本日累計日照量",
+
+
+
+    };
+
+    List<string> chartDataList = new List<string>
+    {
+    converterInfoModels?[0]?.totalkW ??"N/A",
+    converterInfoModels?[0]?.totalGeneratedPowerRatio ??"N/A",
+    converterInfoModels?[0]?.totalPR_Now ??"N/A",
+    converterInfoModels?[0]?.dailyKWH ??"N/A",
+    converterInfoModels?[0]?.maxGenHrs ??"N/A",
+    converterInfoModels?[0]?.totalkWh ??"N/A",
+    converterInfoModels?[0]?.solarRad ??"N/A",
+    converterInfoModels?[0]?.airTemperature ??"N/A",
+    converterInfoModels?[0]?.shadetemperature ??"N/A",
+    converterInfoModels?[0]?.arrayTemp ??"N/A",
+    converterInfoModels?[0]?.windSpeed ??"N/A",
+    converterInfoModels?[0]?.SolRad ??"N/A",
+    };
+}
+
+
+
+
+
+<link rel="stylesheet" href="/css/ChartQuery.css">
+
+<script src="/lib/d3/d3.v7.min.js"></script>
+
+
+
+<div class="contentdetailbox" id="app">
+
+    <div class="submenulist">
+        <div class="attensionneededsublist">
+            <span id="">趨勢圖查詢</span>
+
+        </div>
+
+    </div>
+
+    <div class="submenudetail">
+        <div class="CQbackgroundbox"></div>
+        <div class="CQChartbox">
+
+            <div class="RQdetailbox">
+
+
+                <div class="CQfilterbar">
+
+                    <div class="CQdatefrom">
+                        時間範圍:
+                        <div class="datebox">
+                            <div class="input-group"
+                                 id="datetimepicker1"
+                                 data-td-target-input="nearest"
+                                 data-td-target-toggle="nearest">
+                                <input id="datetimepicker1Input"
+                                       type="text"
+                                       class="form-control"
+                                       data-td-target="#datetimepicker1" />
+                                <span class="input-group-text"
+                                      data-td-target="#datetimepicker1"
+                                      data-td-toggle="datetimepicker">
+                                    <span class="fa-solid fa-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <select id="CQtimepicker1">
+                            @for (int i = 0; i < dailyHours; i++)
+                            {
+                                string formattedNumber = i.ToString("D2");
+                                <option value="@(formattedNumber):00:00">@(formattedNumber)</option>
+                            }
+
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="CQdateto">
+                        到:
+                        <div class="datebox">
+                            <div class="input-group"
+                                 id="datetimepicker2"
+                                 data-td-target-input="nearest"
+                                 data-td-target-toggle="nearest">
+                                <input id="datetimepicker2Input"
+                                       type="text"
+                                       class="form-control"
+                                       data-td-target="#datetimepicker1" />
+                                <span class="input-group-text"
+                                      data-td-target="#datetimepicker1"
+                                      data-td-toggle="datetimepicker">
+                                    <span class="fa-solid fa-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <select id="CQtimepicker2">
+                            @for (int i = 0; i < dailyHours; i++)
+                            {
+                                string formattedNumber = i.ToString("D2");
+                                <option value="@(formattedNumber):00:00">@(formattedNumber)</option>
+                            }
+
+
+                        </select>
+                    </div>
+
+                    <div class="custom-select">
+                        分類:
+                        <select id="columnSelect">
+                            @for (int i = 0; i < chartList.Count; i++)
+                            {
+                                <option value="'@chartDataList[i]'">@chartList[i]</option>
+                            }
+
+
+
+
+
+                        </select>
+
+
+                    </div>
+
+                    <script type="text/javascript">
+
+
+                        window.datetimepicker1 = new tempusDominus.TempusDominus(
+
+                            document.getElementById('datetimepicker1'),
+
+
+                            {
+                                display: {
+                                    components: {
+                                        hours: false,
+                                        minutes: false,
+                                        seconds: false,
+                                    },
+
+                                    viewMode: 'years',
+                                    toolbarPlacement: 'top',
+                                    buttons: {
+                                        today: 'true',
+                                        clear: 'true'
+                                    },
+
+
+
+
+                                },
+                                
+                                : {
+                                    hourCycle: 'h24',
+                                    format: 'yyyy-MM-dd',
+                                },
+                            }
+                        );
+
+                        window.datetimepicker2 = new tempusDominus.TempusDominus(
+
+                            document.getElementById('datetimepicker2'),
+
+
+                            {
+                                display: {
+                                    components: {
+                                        hours: false,
+                                        minutes: false,
+                                        seconds: false,
+                                    },
+
+                                    viewMode: 'years',
+                                    toolbarPlacement: 'top',
+                                    buttons: {
+                                        today: 'true',
+                                        clear: 'true'
+                                    },
+
+
+
+
+                                },
+                                localization: {
+                                    hourCycle: 'h24',
+
+
+                                    format: 'yyyy-MM-dd',
+                                },
+                            }
+                        );
+                    </script>
+
+
+                    <div>
+                        <button id="RQquerybtn" class="RQquery" v-onclick="RQquery">
+                            查詢
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="chartbox">
+                <div id="chartContainer" style="position:relative"></div>
+            </div>
+
+
+
+            @*
+            <canvas id="myChart" height="670" width="1600"></canvas>
+
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.1/chart.min.js"></script>
+            *@
+
+
+        </div>
+
+
+
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+
+
+
+
+    <script>
+
+
+
+
+
+
+
+
+
+
+
+
+        //var ChartModels = @Html.Raw(Json.Serialize(123));
+        //var datasets = [{
+        //    label: selectedOption,
+        //    data: ChartModels.map(function (item) {
+        //        return { x: item.chartTime, y: item.kwh };
+        //    }),
+        //    backgroundColor: 'blue',
+        //    borderColor: 'blue',
+        //    borderWidth: 1
+        //}];
+
+
+
+        //var ctx = document.getElementById("myChart");
+        //var myChart = new Chart(ctx, {
+        //    type: 'line',
+        //    data: {
+
+        //        datasets: datasets
+
+
+
+
+
+
+        //    },
+        //    options: {
+        //        plugins: {
+        //            //title: {
+        //            //    display: true,
+        //            //    text: "Title",
+
+        //            //    font: {
+        //            //        size: 24,
+        //            //        style: 'italic',
+        //            //        family: 'Helvetica Neue'
+        //            //    }
+        //            //},
+        //            legend: {
+        //                display: true,
+        //                labels: {
+
+        //                    font: {
+        //                        size: 22,
+        //                        weight: 'bold'
+        //                    },
+        //                },
+        //                title: {
+        //                    color: 'RED',
+        //                    font: {
+        //                        size: 30, // Adjust the font size as desired
+
+        //                    }
+        //                }
+        //            },
+
+        //        },
+        //        responsive: false,
+
+
+
+
+        //        scales: {
+        //            x: {
+        //                title: {
+        //                    display: true,
+        //                    text: '時間',
+        //                    font: {
+        //                        size: 30,
+        //                        weight: "bold"
+        //                    },
+        //                    color: 'green'
+        //                },
+
+        //                ticks: {
+        //                    maxTicksLimit: 10,
+        //                    font: {
+        //                        size: 14,
+
+        //                    },
+        //                    color: 'black',
+        //                },
+        //            },
+
+        //            y: {
+        //                title: {
+        //                    display: true,
+        //                    text: '數值',
+        //                    font: {
+        //                        size: 30,
+        //                        weight: "bold"
+        //                    },
+        //                    color: 'green'
+        //                },
+
+        //                ticks: {
+        //                    maxTicksLimit: 10,
+        //                    font: {
+        //                        size: 22,
+        //                        weight: "bold"
+        //                    },
+        //                    color: 'black'
+        //                }
+        //            }
+        //        }
+        //    }
+        //});
+
+
+
+
+        //// Finally, update the chart
+        //myChart.update();
+
+
+
+
+
+
+
+    </script>
+    <script type="module">
+        let data = [];
+
+        document.getElementById("RQquerybtn").addEventListener("click", function () {
+            var selectedOption = document.getElementById("columnSelect").value;
+            var selectedOption2 = document.getElementById("datetimepicker1Input").value;
+            var selectedOption3 = document.getElementById("CQtimepicker1").value;
+            var selectedOption4 = document.getElementById("datetimepicker2Input").value;
+            var selectedOption5 = document.getElementById("CQtimepicker2").value;
+            var selectedOptiontxt = document.getElementById("columnSelect").options[document.getElementById("columnSelect").selectedIndex].text;
+
+
+
+
+            var requestData = {
+                name: selectedOption,
+                datetimefrom: selectedOption2 + " " + selectedOption3,
+                datetimeto: selectedOption4 + " " + selectedOption5,
+            };
+
+            $.ajax({
+                type: "Get",
+                url: "/Home/ChartRefresh",
+                data: requestData,
+
+                dataType: "json",
+                success:
+                    function (newChartModels) {
+
+                        if (data.length === 0) {
+                            data = newChartModels;
+
+                        }
+                        else {
+
+
+                            // Update the data variable with new data from the AJAX response
+                            data.length = 0; // Clear the existing data
+                            newChartModels.forEach(item => data.push(item)); // Push new data
+                            // Call a function to update the chart here if needed
+
+                        }
+                        renderChart();
+                    }
+            });
+
+            function renderChart() {
+                //const data = [
+
+                //    { date: "2023-08-01T10:00:00", close: 5 },
+                //    { date: "2023-08-02T15:00:00", close: 110 },
+                //    { date: "2023-08-03T23:00:00", close: 0 },
+                //    { date: "2023-09-01T10:00:00", close: 115 },
+                //    { date: "2023-09-02T15:00:00", close: 155 },
+                //    { date: "2023-09-03T23:00:00", close: 80 },
+                //    { date: "2023-09-04T10:00:00", close: 50 },
+                //    { date: "2023-09-05T15:00:00", close: 50 },
+                //    { date: "2023-09-06T23:00:00", close: 10 },
+                //    { date: "2023-09-07T10:00:00", close: 222 },
+                //    { date: "2023-09-08T15:00:00", close: 195 },
+                //    { date: "2023-09-09T23:00:00", close: 180 },
+                //    { date: "2023-09-10T01:00:00", close: 150 },
+                //    { date: "2023-09-10T02:00:00", close: 70 },
+                //    { date: "2023-09-10T05:00:00", close: 80 },
+                //    { date: "2023-09-10T07:00:00", close: 50 },
+                //    { date: "2023-09-10T15:00:00", close: 110 },
+                //    { date: "2023-09-10T23:00:00", close: 80 },
+                //    { date: "2023-11-10T23:00:00", close: 80 },
+                //    //{ date: new Date("2023-08-01T01:00:00"), close: 100 },
+                //    //{ date: new Date("2023-08-01T02:00:00"), close: 110 },
+                //    //{ date: new Date("2023-08-01T03:00:00"), close: 120 },
+                //    //{ date: new Date("2023-08-01T04:00:00"), close: 100 },
+                //    //{ date: new Date("2023-08-01T05:00:00"), close: 110 },
+                //    //{ date: new Date("2023-08-01T06:00:00"), close: 120 },
+                //    //// Add more data points here
+                //];
+                console.log("before parse:", data);
+                // Parse date strings into Date objects
+
+                data.forEach(function (d) {
+                    d.date = d3.timeParse("%Y-%m-%dT%H:%M:%S")(d.date)
+                    console.log("ddate:", d.date);
+                });
+
+
+
+                console.log("Serialized chartModels data after parse:", data);
+                // Declare the chart dimensions and margins.
+                const width = 1500;
+                const height = 650;
+                const marginTop = 50;
+                const marginRight = 100;
+                const marginBottom = 150;
+                const marginLeft = 100;
+
+
+                // Declare the x (horizontal position) scale.
+                const x = d3.scaleTime(d3.extent(data, d => d.date), [marginLeft, width - marginRight]).nice();
+
+                // Declare the y (vertical position) scale.
+                const y = d3.scaleLinear([0, d3.max(data, d => d.close)], [height - marginBottom, marginTop]);
+
+                // Declare the line generator.
+                const line = d3.line()
+                    .x(d => x(d.date))
+                    .y(d => y(d.close));
+
+                // Create the SVG container.
+                const svg = d3.create("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("viewBox", [0, 0, width, height])
+                    .attr("style", "max-width: 100%; height: auto; height: intrinsic;");
+
+                // Add the x-axis.
+                //svg.append("g")
+
+                //    .style("text-anchor", "end")
+                //    .attr("class", "x axis")
+                //    .attr("transform", `translate(0,${height - marginBottom})`)
+
+                //.call(d3.axisBottom(x)
+                //    .ticks(5)
+                //    .tickSizeOuter(0)
+                //    .tickFormat(d3.timeFormat("%Y/%m/%d %H"))
+                //    );
+
+                // Add the y-axis, remove the domain line, add grid lines and a label.
+                svg.append("g")
+                    .style("font-size", "25px")
+                    .attr("transform", `translate(${marginLeft},0)`)
+                    .call(d3.axisLeft(y).ticks(15))
+                    .call(g => g.select(".domain").remove())
+                    .call(g => g.selectAll(".tick line").clone()
+                        .attr("x2", width - marginLeft - marginRight)
+                        .attr("stroke-opacity", 0.1))
+                    .call(g => g.append("text")
+                        .attr("x", 500)
+                        .attr("y", 25)
+                        .attr("fill", "currentColor")
+                        .attr("text-anchor", "start")
+                        .text(selectedOptiontxt));
+
+
+                const xAxis = d3.axisBottom(x)
+                    .ticks(15)
+                    .tickSizeOuter(7)
+                    .tickFormat(d3.timeFormat("%Y/%m/%d %H"))
+                //.tickPadding(20)
+                // 呼叫繪製x軸、調整x軸位置
+                const xAxisGroup = svg.append("g")
+                    .call(xAxis)
+                    .attr("transform", `translate(0,${height - marginBottom})`)
+                    .style("font-size", "20px")
+                    .selectAll("text")
+                    .style("text-anchor", "end")
+                    //.attr("dx", "-.8em")
+                    //.attr("dy", ".15em")
+                    .attr("transform", "rotate(-45)");
+
+                // Append a path for the line.
+                svg.append("path")
+
+                    .attr("fill", "none")
+                    .attr("stroke", "steelblue")
+                    .attr("stroke-width", 5)
+                    .attr("d", line(data));
+
+                svg
+                    .append('rect')
+
+                    .style("fill", "none")
+                    .style("pointer-events", "all")
+                    .attr('width', width - marginRight)
+                    .attr('height', height - marginBottom)
+                    .style('cursor', 'pointer')
+                    .on('mouseover', mouseover)
+                    .on('mousemove', mousemove)
+                    .on('mouseout', mouseout);
+
+                // 建立沿著折線移動的圓點點
+                const focus = svg.append('g')
+                    .append('circle')
+
+                    .style("fill", "green")
+                    .attr("stroke", "green")
+                    .attr('r', 10)
+                    .style("opacity", 0)
+
+
+
+                // 使用 d3.bisector() 找到滑鼠的 X 軸 index 值
+                const bisect = d3.bisector(d => d['date']).center;
+                console.log("bisect", bisect)
+                // 滑鼠事件觸發的方法
+                function mouseover() {
+                    focus.style("opacity", 1)
+                    focusText.style("opacity", 1)
+                }
+
+                function mousemove() {
+
+                    const x0 = d3.pointer(event)[0];
+                    const y0 = d3.pointer(event)[1];
+                    const targetTime = x.invert(x0);
+                    // 推算出目前hover位置的Time
+                    const i = bisect(data, targetTime);
+                    // 推出目前位置Time的對應第幾個
+
+                    // 先移除Layer上的其他圓形
+                    //circleLayer.selectAll('*').remove();
+
+                    // 直接append`Circle`並`cx``cy`帶入剛剛取得的序列對應的資料位置。
+                    focus
+
+
+                        .attr('cy', y(data[i].close))
+                        .attr('cx', x(data[i].date))
+
+                    //    console.log("x0",x0)
+                    //     console.log("y0",y0)
+                    //     console.log("targetime", targetTime)
+                    //console.log("cy", y(data[i].close))
+                    //        console.log("cx", x(data[i].date))
+
+                    const formatDate = d3.timeFormat("%Y/%m/%d %H");
+                    focusText
+
+                        .html('數值：' + data[i].close)
+                        .attr('y', y(data[i].close - 2))
+
+                        .attr('x', x(data[i].date) - 150)
+                        .append('tspan')
+                        .html('時間：' + formatDate(data[i].date))
+                        .attr('y', y(data[i].close - 1))
+
+                        .attr('x', x(data[i].date) - 150)
+
+                }
+
+                function mouseout() {
+                    focus.style("opacity", 0)
+                    focusText.style("opacity", 0)
+                }
+
+
+                // 建立移動的資料標籤
+                const focusText = svg.append('g')
+                    .append('text')
+                    .style("opacity", 0)
+                    .style("font-size", "30px")
+                    .attr("text-anchor", "left")
+                    .attr("alignment-baseline", "middle")
+                    .style("font-weight", "bold")
+                    .style("fill", "black")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                const chartContainer = document.getElementById("chartContainer");
+                chartContainer.innerHTML = ""; // Clear existing content
+                chartContainer.appendChild(svg.node());
+            }
+        });
+    </script>
+
+
+}

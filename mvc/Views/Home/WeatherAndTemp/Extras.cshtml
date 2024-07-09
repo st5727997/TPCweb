@@ -1,0 +1,207 @@
+﻿@{
+    //List<ConverterInfoModel> converterInfoModels = ViewBag.ConverterInfoModels;
+    //List<ConverterModel> converterModels = ViewBag.ConverterModels;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<PowerEquipmentStatusModel> powerEquipmentModels = ViewBag.PESModels;
+
+
+    //ConverterInfoModel Inv01 = converterInfoModels.FirstOrDefault();
+    //double InvStatus1 = Inv01.CIInv01Status;
+    //string activeMessage1 = GetActiveMessage(InvStatus1);
+
+    //ConverterInfoModel Inv02 = converterInfoModels.FirstOrDefault();
+    //double InvStatus2 = Inv02.CIInv02Status;
+    //string activeMessage2 = GetActiveMessage(InvStatus2);
+
+    //ConverterInfoModel Inv03 = converterInfoModels.FirstOrDefault();
+    //double InvStatus3 = Inv03.CIInv03Status;
+    //string activeMessage3 = GetActiveMessage(InvStatus3);
+
+    //ConverterInfoModel Inv04 = converterInfoModels.FirstOrDefault();
+    //double InvStatus4 = Inv04.CIInv04Status;
+    //string activeMessage4 = GetActiveMessage(InvStatus4);
+
+    //ConverterInfoModel Inv05 = converterInfoModels.FirstOrDefault();
+    //double InvStatus5 = Inv05.CIInv05Status;
+    //string activeMessage5 = GetActiveMessage(InvStatus5);
+
+
+    //ConverterInfoModel Inv06 = converterInfoModels.FirstOrDefault();
+    //double InvStatus6 = Inv06.CIInv06Status;
+    //string activeMessage6 = GetActiveMessage(InvStatus6);
+
+
+    //string GetActiveMessage(double status)
+    //{
+    //    switch (status)
+    //    {
+
+    //        case 0: return "<span style=\"color:green;\">投入</span>";
+    //        case 1: return "<span style=\"color:red;\">待機</span>";
+    //        case 2: return "<span style=\"color:red;\">檢查</span>";
+    //        case 3: return "<span style=\"color:red;\">異常</span>";
+    //        case 4: return "<span style=\"color:red;\">異常鎖定</span>";
+    //        case 5: return "<span style=\"color:red;\">RS485異常</span>";
+    //        case 6: return "<span style=\"color:red;\">離線</span>";
+    //        default: return "<span style=\"color:red;\">ERROR</span>";
+    //    }
+    //}
+}
+
+
+
+
+
+
+
+<div class="contentdetailbox" id="app" >
+    <div class="submenulist">
+        <div class="convertersublist">
+            <span id="converteroverview">氣象、溫度及廠內用電資料</span>
+            
+
+
+        </div>
+        @*<button id="converternextpage" v-on:click="XfontSize" style="margin:2vh; margin-left:36.5vw; margin-right:2vw; padding-right:0.5vw">下一頁</button>*@
+        <div class="Invlistbox">
+            @*            <select class="Invlist" onchange="handleInvChange(this.value)">
+            <option value="P1">Inv1-6</option>
+            <option value="P2">Inv7</option>
+
+            </select>
+            *@
+
+            <script>
+                //var actionUrls = {
+                //    'P1': 'ConverterOverview/_Converter',
+                //    'P2': 'ConverterOverview/_Converter2',
+
+                //};
+
+                var selectedPage = 'WeatherAndTemp/_Extras1'; // Default selected page
+                var contentLoaderInterval = null;
+
+                //function handleInvChange(value) {
+                //    selectedPage = actionUrls[value];
+                //    refreshContent();
+                //}
+
+                function loadConverterDetailContent() {
+                    // Save the current scroll position
+                    var scrollPos = $('#submenudetail').scrollLeft();
+
+                    $.ajax({
+                        url: '@Url.Action("LoadWeatherTempDetail", "Home")',
+                        type: 'GET',
+                        data: { WeatherPath: selectedPage },
+                        dataType: 'html',
+                        success: function (data) {
+                            // Replace the content of submenudetail div with fetched data
+                            $('#refreshBox').html(data);
+
+                            // Restore the scroll position
+                            $('#submenudetail').scrollLeft(scrollPos);
+                        },
+                        error: function () {
+                            console.error('Error fetching submenudetail content.');
+                        }
+                    });
+                }
+
+                function refreshContent() {
+                    // Clear the previous interval (if any)
+                    clearInterval(contentLoaderInterval);
+
+                    // Load content immediately
+                    loadConverterDetailContent();
+
+                    // Set a new interval for loading content
+                    contentLoaderInterval = setInterval(function () {
+                        loadConverterDetailContent();
+                    }, 10000);
+                }
+
+                // Initial call to load content for the default selected page
+                refreshContent();
+            </script>
+        </div>
+
+
+
+
+    </div>
+
+    
+    <div id="submenudetail">
+     
+        <div id="refreshBox">
+
+        </div>
+    </div>
+
+
+
+
+
+
+</div>
+
+@section Scripts{
+    <script>
+        function reloadAtMidnight() {
+            const now = new Date();
+            const midnight = new Date(now);
+            midnight.setHours(24, 0, 0, 0); // Set the time to midnight (00:00:00:000)
+
+            const timeUntilMidnight = midnight - now;
+
+            setTimeout(function () {
+                location.reload();
+                reloadAtMidnight(); // Schedule the next reload for the next day
+            }, timeUntilMidnight);
+        }
+
+        // Call the function to start the reloading process
+        reloadAtMidnight();
+    </script>
+    @*    <script>
+        var contentLoaderInterval = null;
+
+
+        function loadConverterDetailContent() {
+            $.ajax({
+                url: '@Url.Action("LoadConverterDetail", "Home")',
+                type: 'GET',
+
+                dataType: 'html',
+                success: function (data) {
+                    // Replace the content of submenudetail div with fetched data
+                    $('#submenudetail').html(data);
+                },
+                error: function () {
+                    console.error('Error fetching submenudetail content.');
+                }
+            });
+        }
+
+        function refreshContent() {
+            // Clear the previous interval (if any)
+            clearInterval(contentLoaderInterval);
+
+            // Load content immediately
+            loadConverterDetailContent();
+
+            // Set a new interval for loading content
+            contentLoaderInterval = setInterval(function () {
+                loadConverterDetailContent();
+            }, 10000);
+        }
+
+        // Initial call to load content for the default selected page
+        refreshContent();
+
+
+
+    </script>
+*@
+}

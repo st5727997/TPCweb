@@ -1,0 +1,130 @@
+﻿.convertersublist #converterstatus {
+    font-size: 35px;
+    color: #033988;
+    padding-right:2vw;
+}
+
+.menulist #converter {
+    font-size: 28px;
+    color: #497a34
+}
+
+.CSbackgroundbox1 {
+    background-color: white;
+    opacity: .7;
+    margin-right: 2vw;
+    font-size: 20px;
+    z-index: 1;
+    height: 4vh;
+    width:80vw;
+    position:absolute;
+    top:19.3%;
+    left:13.5%;
+       
+}
+
+.CSbackgroundbox2 {
+    background-color: white;
+    opacity: .7;
+    margin-right: 2vw;
+    font-size: 20px;
+    z-index: 1;
+    position: absolute;
+    top: 26%;
+    left: 13.5%;
+    height: 72vh;
+    width: 80vw;
+}
+
+.CSreferencebar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    height: 5vh;
+    font-size: 25px;
+    color: black;
+    z-index: 2;
+    position:relative;
+    
+
+}
+
+
+.topcolorbox {
+    height: 2vh;
+    width: 2vw;
+    display: inline-block;
+    
+}
+
+
+
+.colorboxactive {
+    background-color: #FD3105;
+}
+
+.colorboxpending {
+    background-color: #51BE48;
+}
+
+.colorboxdiagnosing {
+    background-color: #347AE6;
+}
+
+.colorboxerror {
+    background-color: #FBD619;
+}
+
+.colorboxerrorlocked {
+    background-color: #B44DC5;
+}
+
+.colorboxerrorRS485 {
+    background-color: #FC7EF9;
+}
+
+.colorboxoffline {
+    background-color: #616161;
+}
+
+
+
+
+
+.convertersublist a {
+    color: black;
+    text-decoration: none;
+}
+
+.CSdetailbox {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content: space-between;
+    height: 70vh;
+    top:27%;
+  
+    position:absolute;
+    width:79vw;
+   /* background-color: red;*/
+    z-index:2;
+}
+
+button {
+    font-size: 40px;
+    height: 90%;
+    width: 90%;
+    border-radius: 20px;
+    border: 3px solid #606060;
+    /*background-color: #FD3105;*/
+    color:black;
+}
+
+.btnbox {
+    height: calc(50% ); /* Calculate the width of each box with spacing */
+    width: calc(33.33%) ; /* Calculate the height of each box with spacing */
+    
+   display:flex;
+   align-items:center;
+   justify-content:center;
+    
+}

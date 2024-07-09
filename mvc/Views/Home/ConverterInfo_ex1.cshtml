@@ -1,0 +1,576 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using mvc.Models;
+@using System.Reflection
+
+
+
+
+
+
+@{
+
+    List<ConverterInfoModel> converterInfoModels = ViewBag.ConverterInfoModels as List<ConverterInfoModel>;
+
+
+
+    List<string> invNames = new List<string>
+    {
+       "Inverter_TOT","InverterA+B"
+    };
+
+     List<string> dataNames = new List<string>
+    {
+
+"總交流頻率",
+"總交流總實電功率",
+"總交流總實電能",
+"總交流R相電流",
+"總交流S相電流",
+"總交流T相電流",
+"總交流RS相電壓",
+"總交流ST相電壓",
+"總交流TR相電壓",
+"總直流直流電流",
+"總直流直流電壓",
+"總輸出頻率",
+"總輸出總實電功率",
+"總輸出總實電能",
+"總輸出R相電流",
+"總輸出S相電流",
+"總輸出T相電流",
+"總輸出RS相電壓",
+"總輸出ST相電壓",
+
+
+
+    };
+     List<string> dataNames2 = new List<string>
+    {
+"A 總實電功率",
+"A 總實電能",
+"A R相電流",
+"A S相電流",
+"A T相電流",
+"A RS相電壓",
+"A ST相電壓",
+"A TR相電壓",
+"B 總實電功率",
+"B 總實電能",
+"B R相電流",
+"B S相電流",
+"B T相電流",
+"B RS相電壓",
+"B ST相電壓",
+"B TR相電壓",
+
+
+
+
+
+
+    };
+    List<string> dataKeys1 = new List<string>
+    {
+
+"S019_300_INV_AC_TOT_HZ",
+"S019_300_INV_AC_TOT_KW",
+"S019_300_INV_AC_TOT_KWH",
+"S019_300_INV_AC_P_AMP_R",
+"S019_300_INV_AC_P_AMP_S",
+"S019_300_INV_AC_P_AMP_T",
+"S019_300_INV_AC_L_VOLT_RS",
+"S019_300_INV_AC_L_VOLT_ST",
+"S019_300_INV_AC_L_VOLT_TR",
+"S019_300_INV_DC_TOT_AMP",
+"S019_300_INV_DC_TOT_VOLT",
+"S019_300_INV_OUT_TOT_HZ",
+"S019_300_INV_OUT_TOT_KW",
+"S019_300_INV_OUT_TOT_KWH",
+"S019_300_INV_OUT_P_AMP_R",
+"S019_300_INV_OUT_P_AMP_S",
+"S019_300_INV_OUT_P_AMP_T",
+"S019_300_INV_OUT_L_VOLT_RS",
+"S019_300_INV_OUT_L_VOLT_ST",
+
+
+
+     };
+
+    List<string> dataKeys2 = new List<string>
+    {
+"S019_301_INV_A_AC_TOT_KW",
+"S019_301_INV_A_AC_TOT_KWH",
+"S019_301_INV_A_AC_P_AMP_R",
+"S019_301_INV_A_AC_P_AMP_S",
+"S019_301_INV_A_AC_P_AMP_T",
+"S019_301_INV_A_AC_L_VOLT_RS",
+"S019_301_INV_A_AC_L_VOLT_ST",
+"S019_301_INV_A_AC_L_VOLT_TR",
+"S019_302_INV_B_AC_TOT_KW",
+"S019_302_INV_B_AC_TOT_KWH",
+"S019_302_INV_B_AC_P_AMP_R",
+"S019_302_INV_B_AC_P_AMP_S",
+"S019_302_INV_B_AC_P_AMP_T",
+"S019_302_INV_B_AC_L_VOLT_RS",
+"S019_302_INV_B_AC_L_VOLT_ST",
+"S019_302_INV_B_AC_L_VOLT_TR",
+
+
+
+
+    };
+
+    List<List<string>> dataKeys = new List<List<string>>
+    {
+        dataKeys1,
+        dataKeys2
+    };
+
+
+     List<string> units = new List<string>
+    {
+"Hz",
+"kW",
+"kWh",
+"A",
+"A",
+"A",
+"V",
+"V",
+"V",
+"A",
+"V",
+"Hz",
+"kW",
+"kWh",
+"A",
+"A",
+"A",
+"V",
+"V",
+
+
+
+
+    };
+
+     List<string> units2 = new List<string>
+    {
+"kW",
+"kWh",
+"A",
+"A",
+"A",
+"V",
+"V",
+"V",
+"kW",
+"kWh",
+"A",
+"A",
+"A",
+"V",
+"V",
+"V",
+
+
+
+
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+    string GetDisplayValue(double value)
+    {
+        return value == -999 ? "N/A" : value.ToString();
+    }
+
+    string GetImagePath(double status)
+    {
+        switch (status)
+        {
+
+            case 0: return Url.Content("~/images/Button_G.svg");
+            case 1: return Url.Content("~/images/Button_R.svg");
+            case 2: return Url.Content("~/images/Button_R.svg");
+            case 3: return Url.Content("~/images/Button_R.svg");
+            case 4: return Url.Content("~/images/Button_R.svg");
+            case 5: return Url.Content("~/images/Button_R.svg");
+            case 6: return Url.Content("~/images/Button_R.svg");
+            default: return Url.Content("~/images/Error.png");
+        }
+
+    }
+
+    string GetCommMessage(double commStatus)
+    {
+        switch (commStatus)
+        {
+
+            case 0: return "<span style=\"color:green;\">投入</span>";
+            case 1: return "<span style=\"color:red;\">待機</span>";
+            case 2: return "<span style=\"color:red;\">檢查</span>";
+            case 3: return "<span style=\"color:red;\">異常</span>";
+            case 4: return "<span style=\"color:red;\">異常鎖定</span>";
+            case 5: return "<span style=\"color:red;\">RS485異常</span>";
+            case 6: return "<span style=\"color:red;\">離線</span>";
+            default: return "<span style=\"color:red;\">ERROR:Commstatmsg out of range!</span>";
+        }
+
+
+
+    }
+
+    ConverterInfoModel? CIInv01 = converterInfoModels?.FirstOrDefault();
+    double CIInv01Status = CIInv01?.CIInv01Status ?? 2;
+    string statusImagePathInv01 = GetImagePath(CIInv01Status);
+    double CIInv01CommStatus = CIInv01?.CIInv01CommStatus ?? 2;
+    string commStatusImagePathInv01 = GetImagePath(CIInv01CommStatus);
+    string commMessageInv01 = GetCommMessage(CIInv01CommStatus);
+
+    ConverterInfoModel? CIInv02 = converterInfoModels?.FirstOrDefault();
+    double CIInv02Status = CIInv02?.CIInv02Status ?? 2;
+    string statusImagePathInv02 = GetImagePath(CIInv02Status);
+    double CIInv02CommStatus = CIInv02?.CIInv02CommStatus ?? 2;
+    string commStatusImagePathInv02 = GetImagePath(CIInv02CommStatus);
+    string commMessageInv02 = GetCommMessage(CIInv02CommStatus);
+    List<string> statusImagePath = new List<string>
+    {
+        statusImagePathInv01,statusImagePathInv02
+
+    };
+
+    List<string> commMessages = new List<string>
+    {
+        commMessageInv01,commMessageInv02
+
+    };
+
+    List<string> commStatusImagePath = new List<string>
+    {
+        commStatusImagePathInv01,commStatusImagePathInv02
+
+    };
+
+
+}
+
+
+
+<link rel="stylesheet" href="/css/ConverterInfo.css">
+
+
+    <div class="submenudetail">
+        <div class="CIbackgroundbox1">
+            @for (int i = 0; i < 1; i++)
+            {
+
+                <div class="CIbox">
+                    <div class="CIheading">
+                        <div class="CIconverterstatusbar1">
+                            <span class="CIconvertername" id="converter">@invNames[i]</span>
+                            &nbsp;運作狀態:<img class="statusbtnbox" src="@statusImagePath[i]" alt="Image">
+                            <span class="state">通訊狀態:</span><img class="statusbtnbox" src="@commStatusImagePath[i]" alt="Image">
+                            @Html.Raw(commMessages[i])
+                        </div>
+
+
+                    </div>
+
+                    <div class="CIconverterdetailbox">
+                        <div>
+                            @{
+                                for (int j = 0; j < ((units.Count) / 2); j++)
+                                {
+
+
+
+
+                                    <div class="CIrows">
+                                        <div class="CInames">
+                                            <div>@dataNames[j]</div>
+
+
+                                        </div>
+                                        <div class="CIdata">
+                                            <div>
+                                                @{
+                                                    PropertyInfo propertyInfo = typeof(ConverterInfoModel).GetProperty(dataKeys[i][j]);
+                                                    if (propertyInfo != null)
+                                                    {
+                                                        var value = propertyInfo?.GetValue(converterInfoModels.FirstOrDefault());
+
+                                                        <span>@GetDisplayValue((double)value)</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>N/A</span>
+                                                    }
+
+
+
+                                                }
+                                            </div>
+
+                                        </div>
+                                        <div class="CIunits">
+
+                                            <div>@units[j]</div>
+
+
+
+                                        </div>
+                                    </div>
+
+
+
+
+
+
+
+
+
+                                }
+                                if (((units.Count)) % 2 == 1)
+                                {
+                                    <div class="CIrows">
+                                        <div class="CInames">
+                                            <div></div>
+                                        </div>
+                                        <div class="CIdata">
+                                            <div></div>
+                                        </div>
+                                        <div class="CIunits">
+                                            <div></div>
+                                        </div>
+                                    </div>
+
+                                }
+                            }
+                        </div>
+                        <div>
+                            @{
+                                for (int j = ((units.Count) / 2); j < units.Count; j++)
+                                {
+
+
+
+
+                                    <div class="CIrows">
+                                        <div class="CInames">
+                                            <div>@dataNames[j]</div>
+
+
+                                        </div>
+                                        <div class="CIdata">
+                                            <div>
+
+                                                @{
+                                                    PropertyInfo propertyInfo = typeof(ConverterInfoModel).GetProperty(dataKeys[i][j]);
+                                                    if (propertyInfo != null)
+                                                    {
+                                                        var value = propertyInfo?.GetValue(converterInfoModels.FirstOrDefault());
+
+                                                        <span>@GetDisplayValue((double)value)</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>N/A</span>
+                                                    }
+
+
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="CIunits">
+
+                                            <div>@units[j]</div>
+
+
+
+                                        </div>
+                                    </div>
+
+
+
+
+
+
+
+
+
+                                }
+
+                            }
+                        </div>
+
+
+                    </div>
+                </div>
+
+
+            }
+        @for (int i = 1; i < 2; i++)
+        {
+
+            <div class="CIbox">
+                <div class="CIheading">
+                    <div class="CIconverterstatusbar1">
+                        <span class="CIconvertername" id="converter">@invNames[i]</span>
+                        &nbsp;運作狀態:<img class="statusbtnbox" src="@statusImagePath[i]" alt="Image">
+                        <span class="state">通訊狀態:</span><img class="statusbtnbox" src="@commStatusImagePath[i]" alt="Image">
+                        @Html.Raw(commMessages[i])
+                    </div>
+
+
+                </div>
+
+                <div class="CIconverterdetailbox">
+                    <div>
+                        @{
+                            for (int j = 0; j < ((units2.Count) / 2); j++)
+                            {
+
+
+
+
+                                <div class="CIrows">
+                                    <div class="CInames">
+                                        <div>@dataNames2[j]</div>
+
+
+                                    </div>
+                                    <div class="CIdata">
+                                        <div>
+                                            @{
+                                                PropertyInfo propertyInfo = typeof(ConverterInfoModel).GetProperty(dataKeys[i][j]);
+                                                if (propertyInfo != null)
+                                                {
+                                                    var value = propertyInfo?.GetValue(converterInfoModels.FirstOrDefault());
+
+                                                    <span>@GetDisplayValue((double)value)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>N/A</span>
+                                                }
+
+
+
+                                            }
+                                        </div>
+
+                                    </div>
+                                    <div class="CIunits">
+
+                                        <div>@units2[j]</div>
+
+
+
+                                    </div>
+                                </div>
+
+
+
+
+
+
+
+
+
+                            }
+                            if (((units2.Count)) % 2 == 1)
+                            {
+                                <div class="CIrows">
+                                    <div class="CInames">
+                                        <div></div>
+                                    </div>
+                                    <div class="CIdata">
+                                        <div></div>
+                                    </div>
+                                    <div class="CIunits">
+                                        <div></div>
+                                    </div>
+                                </div>
+
+                            }
+                        }
+                    </div>
+                    <div>
+                        @{
+                            for (int j = ((units2.Count) / 2); j < units2.Count; j++)
+                            {
+
+
+
+
+                                <div class="CIrows">
+                                    <div class="CInames">
+                                        <div>@dataNames2[j]</div>
+
+
+                                    </div>
+                                    <div class="CIdata">
+                                        <div>
+
+                                            @{
+                                                PropertyInfo propertyInfo = typeof(ConverterInfoModel).GetProperty(dataKeys[i][j]);
+                                                if (propertyInfo != null)
+                                                {
+                                                    var value = propertyInfo?.GetValue(converterInfoModels.FirstOrDefault());
+
+                                                    <span>@GetDisplayValue((double)value)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>N/A</span>
+                                                }
+
+
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="CIunits">
+
+                                        <div>@units2[j]</div>
+
+
+
+                                    </div>
+                                </div>
+
+
+
+
+
+
+
+
+
+                            }
+
+                        }
+                    </div>
+
+
+                </div>
+            </div>
+
+
+        }
+
+        </div>
+    </div>
+
+
+
+

@@ -1,0 +1,162 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using mvc.Models;
+@using System.Reflection
+
+
+
+
+
+
+@{
+
+    List<ConverterInfoModel> converterInfoModels = ViewBag.ConverterInfoModels as List<ConverterInfoModel>;
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int invCount = (int)converterInfoModels[0]?.invCount;
+    int extraPages = 0;
+
+
+    List<string> activeInvs = new List<string>();
+    for (int i = 1; i <= invCount; i++)
+    {
+        string invStatus = $"CIInv{i:D2}Status";
+
+
+        activeInvs.Add(invStatus);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+@*<script>
+    setInterval(function () {
+        location.reload();
+    }, 10000);
+</script>*@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script>
+    function reloadAtMidnight() {
+        const now = new Date();
+        const midnight = new Date(now);
+        midnight.setHours(24, 0, 0, 0); // Set the time to midnight (00:00:00:000)
+
+        const timeUntilMidnight = midnight - now;
+
+        setTimeout(function () {
+            location.reload();
+            reloadAtMidnight(); // Schedule the next reload for the next day
+        }, timeUntilMidnight);
+    }
+
+    // Call the function to start the reloading process
+    reloadAtMidnight();
+</script>
+<script>
+
+</script>
+<script>
+    var actionUrls = {};
+    var selectedPage = 'ConverterInfo/converterinfo1'; // Default selected page
+    var contentLoaderInterval = null;
+
+
+    const converterInfoModels = @Html.Raw(Json.Serialize(ViewBag.ConverterInfoModels));
+    const invCount = converterInfoModels[0]?.invCount;
+    const extraPages = @extraPages;
+
+    for (let i = 1; i <= (invCount + 1) / 2; i++) {
+
+        actionUrls['P' + i] = `ConverterInfo/converterinfo${i}`;
+
+    }
+    for (let i = (invCount + 1) / 2 + 1; i <= (invCount + 1) / 2 + extraPages; i++) {
+        const exNumber = i - ((invCount + 1) / 2); // Calculate the adjusted number starting from 1
+        actionUrls['P' + i] = `ConverterInfo/converterinfo_ex${exNumber}`;
+
+    }
+
+    function handleConverterChange(value) {
+        selectedPage = actionUrls[value];
+        refreshContent();
+    }
+    function loadInvDetailContent() {
+        $.ajax({
+            url: '@Url.Action("LoadInvDetail", "Home")',
+            type: 'GET',
+            data: { InvPath: selectedPage },
+            dataType: 'html',
+            success: function (data) {
+                // Replace the content of submenudetail div with fetched data
+                $('#InvDetailBox').html(data);
+            },
+            error: function () {
+                console.error('Error fetching submenudetail content.');
+            }
+        });
+    }
+    function refreshContent() {
+        // Clear the previous interval (if any)
+        clearInterval(contentLoaderInterval);
+
+        // Load content immediately
+        loadInvDetailContent();
+
+        // Set a new interval for loading content
+        contentLoaderInterval = setInterval(function () {
+            loadInvDetailContent();
+        }, 1000000);
+    }
+
+    // Initial call to load content for the default selected page
+    refreshContent();
+
+
+</script>
+
+
+<link rel="stylesheet" href="/css/ConverterInfo.css">
+<div class="contentdetailbox" id="app">
+   
+    <div class="submenulist">
+        <div class="convertersublist">
+            <a href="/home/converterinfo" id="converterinfo">全變流器加總</a>
+            <a href="/home/converter" id="converteroverview">&#124變流器資訊&#124;</a>
+
+        </div>
+        <div class="dropdownlistbox">
+        </div>
+    </div>
+
+   
+    <div id="InvDetailBox">
+    </div>
+
+
+</div>
+
+
+
+
+
+
+
+
